@@ -428,8 +428,9 @@ var p = Container.prototype = new DisplayObject();
 		var ctx = DisplayObject._hitTestContext;
 		var canvas = DisplayObject._hitTestCanvas;
 		var mtx = this._matrix;
-		var hasHandler = (mouseEvents&1 && (this.onPress || this.onClick || this.onDoubleClick)) || (mouseEvents&2 &&
-																(this.onMouseOver || this.onMouseOut));
+		var hasHandler = (mouseEvents&1 && (this.hasEventListener(MouseEvent.MOUSE_DOWN) || this.hasEventListener(MouseEvent.CLICK)
+			|| this.hasEventListener(MouseEvent.DOUBLE_CLICK))) || (mouseEvents&2 && (this.hasEventListener(MouseEvent.ROLL_OVER)
+			|| this.hasEventListener(MouseEvent.ROLL_OUT)));
 
 		// if we have a cache handy & this has a handler, we can use it to do a quick check.
 		// we can't use the cache for screening children, because they might have hitArea set.
@@ -461,7 +462,11 @@ var p = Container.prototype = new DisplayObject();
 					result = child._getObjectsUnderPoint(x, y, arr, mouseEvents);
 					if (!arr && result) { return result; }
 				}
-			} else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.onPress || child.onClick || child.onDoubleClick)) || (mouseEvents&2 && (child.onMouseOver || child.onMouseOut))) {
+			} else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.hasEventListener(MouseEvent.MOUSE_DOWN)
+									|| child.hasEventListener(MouseEvent.CLICK) || child.hasEventListener(MouseEvent.DOUBLE_CLICK)))
+									|| (mouseEvents&2 && (child.hasEventListener(MouseEvent.ROLL_OVER)
+									|| child.hasEventListener(MouseEvent.ROLL_OUT)))) {
+
 				var hitArea = child.hitArea;
 				child.getConcatenatedMatrix(mtx);
 				

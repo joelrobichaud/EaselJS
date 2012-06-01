@@ -7,7 +7,11 @@ CONFIGURATION
 var SOURCE_FILES = [
 	"../src/easeljs/utils/UID.js",
 	"../src/easeljs/utils/Ticker.js",
+	"../src/easeljs/events/EventDispatcher.js",
+	"../src/easeljs/events/Event.js",
+	"../src/easeljs/events/NativeEvent.js",
 	"../src/easeljs/events/MouseEvent.js",
+	"../src/easeljs/events/KeyboardEvent.js",
 	"../src/easeljs/geom/Matrix2D.js",
 	"../src/easeljs/geom/Point.js",
 	"../src/easeljs/geom/Rectangle.js",
@@ -28,7 +32,8 @@ var SOURCE_FILES = [
 	//"../src/easeljs/filters/BoxBlurFilter.js",
 	//"../src/easeljs/filters/ColorFilter.js",
 	//"../src/easeljs/filters/ColorMatrixFilter.js",
-	"../src/easeljs/ui/Touch.js"
+	"../src/easeljs/ui/Touch.js",
+	"../src/easeljs/ui/Keyboard.js"
 ];
 
 // default name for lib output:
