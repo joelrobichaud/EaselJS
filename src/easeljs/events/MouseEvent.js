@@ -45,12 +45,11 @@ var p = MouseEvent.prototype = new NativeEvent();
 var s = MouseEvent;
 
 // public properties:
-
 	/**
 	 * The mouseX position on the stage.
 	 * @property stageX
 	 * @type Number
-	*/
+	 **/
 	p.stageX = 0;
 
 	/**
@@ -64,49 +63,49 @@ var s = MouseEvent;
 	 * @property CLICK
 	 * @static
 	 * @type String
-	 */
+	 **/
 	s.CLICK = "click";
 
 	/**
 	 * @property DOUBLE_CLICK
 	 * @static
 	 * @type String
-	 */
+	 **/
 	s.DOUBLE_CLICK = "doubleClick";
 
 	/**
 	 * @property MOUSE_DOWN
 	 * @static
 	 * @type String
-	 */
+	 **/
 	s.MOUSE_DOWN = "mouseDown";
 
 	/**
 	 * @property MOUSE_UP
 	 * @static
 	 * @type String
-	 */
+	 **/
 	s.MOUSE_UP = "mouseUp";
 
 	/**
 	 * @property MOUSE_MOVE
 	 * @static
 	 * @type String
-	 */
+	 **/
 	s.MOUSE_MOVE = "mouseMove";
 
 	/**
 	 * @property ROLL_OVER
 	 * @static
 	 * @type String
-	 */
+	 **/
 	s.ROLL_OVER = "rollOver";
 
 	/**
 	 * @property ROLL_OUT
 	 * @static
 	 * @type String
-	 */
+	 **/
 	s.ROLL_OUT = "rollOut";
 
 // constructor:

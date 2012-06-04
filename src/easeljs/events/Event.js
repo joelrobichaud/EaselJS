@@ -1,61 +1,64 @@
 (function(window) {
 
-var p = Event.prototype = new EventDispatcher();
-
-/**
- * @property target
- * @type Object
- */
-p.target = null;
-
-/**
- * @property type
- * @type String
- */
-p.type = null;
-
 /**
  * @class Event
  * @constructor
  * @param {String} type
- */
-function Event(type) {
+ **/
+var Event = function(type) {
 	this.initialize(type);
 }
+var p = Event.prototype = new EventDispatcher();
 
-/**
- * @property EventDispatcher_initialize
- * @type Function
- * @private
- **/
-p.EventDispatcher_initialize = p.initialize;
+// public properties :
+	/**
+	 * @property target
+	 * @readonly
+	 * @type Object
+	 **/
+	p.target = null;
 
-/**
- * Initialization method.
- * @method initialize
- * @protected
-*/
-p.initialize = function(type) {
-	this.EventDispatcher_initialize();
-	this.type = type;
-}
+	/**
+	 * @property type
+	 * @readonly
+	 * @type String
+	 **/
+	p.type = null;
 
-/**
- * @method clone
- * @return {Event}
- */
-p.clone = function() {
-	return new Event(this.type);
-}
+// constructor :
+	/**
+	 * @property EventDispatcher_initialize
+	 * @type Function
+	 * @private
+	 **/
+	p.EventDispatcher_initialize = p.initialize;
 
-/**
- * @method toString
- * @return {String}
- */
-p.toString = function() {
-	return "[Event (type="+this.type+")]";
-}
+	/**
+	 * Initialization method.
+	 * @method initialize
+	 * @protected
+	**/
+	p.initialize = function(type) {
+		this.EventDispatcher_initialize();
+		this.type = type;
+	}
+
+// public methods :
+	/**
+	 * @method clone
+	 * @return {Event}
+	 **/
+	p.clone = function() {
+		return new Event(this.type);
+	}
+
+	/**
+	 * @method toString
+	 * @return {String}
+	 **/
+	p.toString = function() {
+		return "[Event (type="+this.type+")]";
+	}
 
 window.Event = Event;
-
 }(window));

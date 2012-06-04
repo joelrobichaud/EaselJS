@@ -1,5 +1,10 @@
 (function(window) {
 
+// constructor:
+/**
+* @class Keyboard
+* @static
+**/
 var Keyboard = {
 	"BACKSPACE": 8,
 	"CAPS_LOCK": 20,
@@ -89,5 +94,4 @@ var Keyboard = {
 }
 
 window.Keyboard = Keyboard;
-
 }(window));

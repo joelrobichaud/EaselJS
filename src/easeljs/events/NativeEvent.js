@@ -1,56 +1,57 @@
 (function(window) {
 
-var p = NativeEvent.prototype = new Event();
-
-/**
- * @property nativeEvent
- * @type Object
- */
-p.nativeEvent = null;
-
 /**
  * @class NativeEvent
  * @extends Event
  * @constructor
  * @param {String} type
- */
-function NativeEvent(type, nativeEvent) {
+ **/
+var NativeEvent = function(type, nativeEvent) {
 	this.initialize(type, nativeEvent);
 }
+var p = NativeEvent.prototype = new Event();
 
-/**
- * @property Event_initialize
- * @type Function
- * @private
- **/
-p.Event_initialize = p.initialize;
+// public properties :
+	/**
+	 * @property nativeEvent
+	 * @type Object
+	 **/
+	p.nativeEvent = null;
 
-/**
- * Initialization method.
- * @method initialize
- * @protected
-*/
-p.initialize = function(type, nativeEvent) {
-	this.Event_initialize(type);
-	this.nativeEvent = nativeEvent;
-}
+// constructor :
+	/**
+	 * @property Event_initialize
+	 * @type Function
+	 * @private
+	 **/
+	p.Event_initialize = p.initialize;
 
-/**
- * @method clone
- * @return {NativeEvent}
- */
-p.clone = function() {
-	return new NativeEvent(this.type);
-}
+	/**
+	 * Initialization method.
+	 * @method initialize
+	 * @protected
+	 **/
+	p.initialize = function(type, nativeEvent) {
+		this.Event_initialize(type);
+		this.nativeEvent = nativeEvent;
+	}
 
-/**
- * @method toString
- * @return {String}
- */
-p.toString = function() {
-	return "[NativeEvent (type="+this.type+")]";
-}
+// public methods :
+	/**
+	 * @method clone
+	 * @return {NativeEvent}
+	 **/
+	p.clone = function() {
+		return new NativeEvent(this.type);
+	}
+
+	/**
+	 * @method toString
+	 * @return {String}
+	 **/
+	p.toString = function() {
+		return "[NativeEvent (type="+this.type+")]";
+	}
 
 window.NativeEvent = NativeEvent;
-
 }(window));
