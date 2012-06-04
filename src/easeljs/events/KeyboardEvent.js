@@ -18,7 +18,7 @@ var KeyboardEvent = function(type, keyCode, charCode, ctrlKey, altKey, shiftKey,
 var p = KeyboardEvent.prototype = new NativeEvent();
 var s = KeyboardEvent;
 
-// public properties :
+// public properties:
 	/**
 	 * @property keyCode
 	 * @type {Unsigned Integer}
@@ -63,7 +63,7 @@ var s = KeyboardEvent;
 	 **/
 	s.KEY_UP = "keyUp";
 
-// constructor :
+// constructor:
 	/**
 	 * @property NativeEvent_initialize
 	 * @type Function
@@ -85,7 +85,7 @@ var s = KeyboardEvent;
 		this.shiftKey = shiftKey;
 	}
 
-// public methods :
+// public methods:
 	/**
 	 * @method clone
 	 * @return {KeyboardEvent}

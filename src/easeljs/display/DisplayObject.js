@@ -47,6 +47,7 @@ var DisplayObject = function() {
 }
 var p = DisplayObject.prototype = new EventDispatcher();
 
+// public static properties:
 	/**
 	 * Suppresses errors generated when using features like hitTest, onPress/onClick, and getObjectsUnderPoint with cross
 	 * domain content
@@ -57,6 +58,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 **/
 	DisplayObject.suppressCrossDomainErrors = false;
 
+// private static properties:
 	/**
 	 * @property _hitTestCanvas
 	 * @type HTMLCanvasElement
@@ -82,6 +84,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 **/
 	DisplayObject._nextCacheID = 1;
 
+// public properties:
 	/**
 	 * The alpha (transparency) for this display object. 0 is fully transparent, 1 is fully opaque.
 	 * @property alpha
@@ -297,10 +300,16 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @default null
 	 */
 	p.hitArea = null;
-	
+
+	/**
+	 * @property parentContainerInheritsSize
+	 * @public
+	 * @type Boolean
+	 * @default true
+	 */
+	p.parentContainerInheritsSize = true;
 
 // private properties:
-
 	/**
 	 * @property _cacheOffsetX
 	 * @protected
@@ -340,11 +349,17 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @default null
 	 **/
 	p._matrix = null;
-	
+
+	/**
+	 * @property _dragInfos
+	 * @protected
+	 * @type Object
+	 * @default null
+	 **/
+	p.dragInfos = null;
 
 // constructor:
 	// separated so it can be easily addressed in subclasses:
-
 	/**
 	 * @property EventDispatcher_initialize
 	 * @type Function
@@ -356,7 +371,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	*/
+	 **/
 	p.initialize = function() {
 		this.EventDispatcher_initialize();
 		this.id = UID.get();
@@ -623,6 +638,64 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	}
 
 	/**
+	 * @method getWidth
+	 * @return {Number}
+	 **/
+	p.getWidth = function() {
+		var mtx = new Matrix2D(), dimensions = this._getDimensions();
+		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
+		return Math.abs(dimensions.x * mtx.a + dimensions.y * mtx.b);
+	}
+
+	/**
+	 * @method getHeight
+	 ** @return {Number}
+	 */
+	p.getHeight = function() {
+		var mtx = new Matrix2D(), dimensions = this._getDimensions();
+		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
+		return Math.abs(dimensions.x * mtx.c + dimensions.y * mtx.d);
+	}
+
+	/**
+	 * @method getSize
+	 * @return {Object}
+	 **/
+	p.getSize = function() {
+		var mtx = new Matrix2D(), dimensions = this._getDimensions();
+		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
+		return {
+			width: Math.abs(dimensions.x * mtx.a + dimensions.y * mtx.b),
+			height: Math.abs(dimensions.x * mtx.c + dimensions.y * mtx.d)
+		};
+	}
+
+	/**
+	 * @method getRawWidth
+	 * @return {Number}
+	 **/
+	p.getRawWidth = function() {
+		return this._getDimensions(true).x;
+	}
+
+	/**
+	 * @method getRawHeight
+	 * @return {Number}
+	 **/
+	p.getRawHeight = function() {
+		return this._getDimensions(true).y;
+	}
+
+	/**
+	 * @method getRawSize
+	 * @return {Object}
+	 **/
+	p.getRawSize = function() {
+		var dimensions = this._getDimensions(true);
+		return { width: dimensions.x, height: dimensions.y };
+	}
+
+	/**
 	 * Tests whether the display object intersects the specified local point (ie. draws a pixel with alpha > 0 at
 	 * the specified position). This ignores the alpha, shadow and compositeOperation of the display object, and all
 	 * transform properties including regX/Y.
@@ -631,7 +704,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @param {Number} y The y position to check in the display object's local coordinates.
 	 * @return {Boolean} A Boolean indicting whether a visible portion of the DisplayObject intersect the specified
 	 * local Point.
-	*/
+	 **/
 	p.hitTest = function(x, y) {
 		var ctx = DisplayObject._hitTestContext;
 		var canvas = DisplayObject._hitTestCanvas;
@@ -644,6 +717,126 @@ var p = DisplayObject.prototype = new EventDispatcher();
 		canvas.width = 0;
 		canvas.width = 1;
 		return hit;
+	}
+
+	/** 
+	 * Shortcut to hitTest
+	 * @property hitTestPoint
+	 * @type Function
+	 **/
+	p.hitTestPoint = p.hitTest;
+
+	/**
+	 * @method hitTestObject
+	 * @param {DisplayObject} obj
+	 * @return {Boolean}
+	 **/
+	p.hitTestObject = function(obj) {
+		var posA = this.parent.localToGlobal(this.x, this.y), 
+			posB = obj.parent.localToGlobal(obj.x, obj.y);
+
+		if (posA.y + this.getHeight() < posB.y) return false;
+		if (posA.y > posB.y + obj.getHeight()) 	return false;
+		if (posA.x + this.getWidth() < posB.x) 	return false;
+		if (posA.x > posB.x + obj.getWidth()) 	return false;
+		return true;
+	}
+
+	/**
+	 * @method startDrag
+	 * @param {Boolean} lockCenter
+	 * @param {Rectangle} bounds
+	 **/
+	p.startDrag = function(lockCenter, bounds) {
+		var stage = this.getStage();
+		if (!stage) { return; }
+
+		var current = this.parent.localToGlobal(this.x, this.y)
+		  , startX = stage.mouseX
+		  , startY = stage.mouseY
+		  , offsetX = lockCenter ? this.getWidth() * 0.5 : current.x
+		  , offsetY = lockCenter ? this.getHeight() * 0.5 : current.y
+		;
+
+		if (lockCenter) {
+			var center = this.parent.globalToLocal(startX - offsetX, startY - offsetY);
+			this.x = center.x;
+			this.y = center.y;
+		}
+
+		stage._activeDragTarget = this;
+		this._dragInfos = {
+			"lockCenter": lockCenter,
+			"bounds": bounds,
+			"startX": startX,
+			"startY": startY,
+			"offsetX": offsetX,
+			"offsetY": offsetY
+		};
+	}
+
+	/**
+	 * @method stopDrag
+	 **/
+	p.stopDrag = function() {
+		var stage = this.getStage();
+		if (!stage) { return; }
+
+		stage._activeDragTarget = null;
+		this._dragInfos = null;
+	}
+
+	/**
+	 * @method drag
+	 * @param {MouseEvent} evt
+	 **/
+	p.drag = function(evt) {
+		var current, destination = new Point(), localDestination, dragInfos = this._dragInfos, bounds = dragInfos.bounds;
+
+		if (dragInfos.lockCenter) {
+			destination.x = evt.stageX - dragInfos.offsetX
+			destination.y = evt.stageY - dragInfos.offsetY;
+		} else {
+			destination.x = evt.stageX - dragInfos.startX + dragInfos.offsetX;
+			destination.y = evt.stageY - dragInfos.startY + dragInfos.offsetY;
+		}
+		
+		if (bounds) {
+			current = new Point(destination.x, destination.y);
+
+			if (bounds.width <= this.getWidth() || bounds.height <= this.getHeight())
+			{
+				if (current.x > bounds.x) {
+					destination.x = bounds.x;
+				} else if (current.x + this.getWidth() < bounds.width) {
+					destination.x = bounds.width - this.getWidth();
+				}
+
+				if (current.y > bounds.y) {
+					destination.y = bounds.y;
+				} else if (current.y + this.getHeight() < bounds.height) {
+					destination.y = bounds.height - this.getHeight();
+				}
+			}
+			else
+			{
+				if (current.x < bounds.x) {
+					destination.x = bounds.x;
+				} else if (current.x + this.getWidth() > bounds.width) {
+					destination.x = bounds.width - this.getWidth();
+				}
+
+				if (current.y < bounds.y) {
+					destination.y = bounds.y;
+				} else if (current.y + this.getHeight() > bounds.height) {
+					destination.y = bounds.height - this.getHeight();
+				}
+			}
+		}
+
+		localDestination = this.parent.globalToLocal(destination.x, destination.y);
+		this.x = localDestination.x;
+		this.y = localDestination.y;
 	}
 
 	/**
@@ -668,7 +861,6 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	}
 
 // private methods:
-
 	// separated so it can be used more easily in subclasses:
 	/**
 	 * @method cloneProps
@@ -752,7 +944,15 @@ var p = DisplayObject.prototype = new EventDispatcher();
 			this.filters[i].applyFilter(ctx, 0, 0, w, h);
 		}
 	}
-	 
+
+	/**
+	 * @method _getDimensions
+	 * @protected
+	 * @return {Point}
+	 **/
+	p._getDimensions = function() {
+		return new Point();
+	}
 
 window.DisplayObject = DisplayObject;
 }(window));

@@ -68,6 +68,7 @@ var p = Shape.prototype = new DisplayObject();
 		this.graphics = graphics ? graphics : new Graphics();
 	}
 
+// public methods :
 	/**
 	 * Returns true or false indicating whether the Shape would be visible if drawn to a canvas.
 	 * This does not account for whether it would be visible within the boundaries of the stage.
@@ -122,6 +123,16 @@ var p = Shape.prototype = new DisplayObject();
 	 **/
 	p.toString = function() {
 		return "[Shape (name="+  this.name +")]";
+	}
+
+// private methods :
+	/**
+	 * @method _getDimensions
+	 * @protected
+	 * @return {Point}
+	 **/
+	p._getDimensions = function() {
+		return new Point(this.graphics.getWidth(), this.graphics.getHeight());
 	}
 
 window.Shape = Shape;

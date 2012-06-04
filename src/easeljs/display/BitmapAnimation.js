@@ -46,7 +46,6 @@ var BitmapAnimation = function(spriteSheet) {
 var p = BitmapAnimation.prototype = new DisplayObject();
 
 // public properties:
-
 	/**
 	 * Specifies a function to call whenever any animation reaches its end. It will be called with two
 	 * params: the first will be a reference to this instance, the second will be the name of the animation
@@ -106,9 +105,8 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 	 * @property offset
 	 * @type Number
 	 * @default 0
-	 */
+	 **/
 	p.offset = 0;
-	
 	
 	/**
 	 * Specifies the current frame index within the current playing animation. When playing normally, this will
@@ -148,12 +146,13 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	*/
+	 **/
 	p.initialize = function(spriteSheet) {
 		this.DisplayObject_initialize();
 		this.spriteSheet = spriteSheet;
 	}
 
+// public methods:
 	/**
 	 * Returns true or false indicating whether the display object would be visible if drawn to a canvas.
 	 * This does not account for whether it would be visible within the boundaries of the stage.
@@ -172,7 +171,7 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 	 **/
 	p.DisplayObject_draw = p.draw;
 
-/**
+	/**
 	 * Draws the display object into the specified context ignoring it's visible, alpha, shadow, and transform.
 	 * Returns true if the draw was handled (useful for overriding functionality).
 	 * NOTE: This method is mainly for internal use, though it may be useful for advanced uses.
@@ -255,7 +254,7 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 	/**
 	 * Advances the playhead. This occurs automatically each tick by default.
 	 * @method advance
-	*/
+	 **/
 	p.advance = function() {
 		if (this._animation) { this.currentAnimationFrame++; }
 		else { this.currentFrame++; }
@@ -295,7 +294,6 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 		}
 		if (this.onTick) { this.onTick(data); }
 	}
-	
 	
 	/**
 	 * Normalizes the current frame, advancing animations and dispatching callbacks as appropriate.
@@ -367,6 +365,15 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 			this.currentAnimation = this._animation = null;
 			this.currentFrame = frameOrAnimation;
 		}
+	}
+
+	/**
+	 * @method _getDimensions
+	 * @protected
+	 * @return {Point}
+	 **/
+	BitmapAnimation.prototype._getDimensions = function() {
+		return new Point(this.spriteSheet._frameWidth, this.spriteSheet._frameHeight);
 	}
 
 window.BitmapAnimation = BitmapAnimation;

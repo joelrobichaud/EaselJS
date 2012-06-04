@@ -47,7 +47,7 @@ var Text = function(text, font, color) {
 }
 var p = Text.prototype = new DisplayObject();
 
-
+// private static properties:
 	/**
 	 * @property _workingContext
 	 * @type CanvasRenderingContext2D
@@ -93,7 +93,7 @@ var p = Text.prototype = new DisplayObject();
 	 * whatwg spec</a>.
 	 * @property textBaseline
 	 * @type String
-	*/
+	 **/
 	p.textBaseline = null;
 	
 	/** The maximum width to draw the text. If maxWidth is specified (not null), the text will be condensed or 
@@ -102,7 +102,7 @@ var p = Text.prototype = new DisplayObject();
 	 * whatwg spec</a>.
 	 * @property maxWidth
 	 * @type Number
-	*/
+	 **/
 	p.maxWidth = null;
 	
 	/** If true, the text will be drawn as a stroke (outline). If false, the text will be drawn as a fill.
@@ -138,7 +138,7 @@ var p = Text.prototype = new DisplayObject();
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	*/
+	 **/
 	p.initialize = function(text, font, color) {
 		this.DisplayObject_initialize();
 		this.text = text;
@@ -217,6 +217,14 @@ var p = Text.prototype = new DisplayObject();
 	p.getMeasuredHeight = function() {
 		return this._drawText()*(this.lineHeight||this.getMeasuredLineHeight());
 	}
+
+	/**
+	 * @method getNumLines
+	 * @return {Integer}
+	 **/
+	p.getNumLines = function() {
+		return (this.lineWidth ? Math.ceil(this.getMeasuredWidth() / this.lineWidth) : 1) + this.text.split('\n').length - 1;
+	}
 	
 	/**
 	 * Returns a clone of the Point instance.
@@ -239,7 +247,6 @@ var p = Text.prototype = new DisplayObject();
 	}
 	
 // private methods:
-	
 	/**
 	 * @property DisplayObject_cloneProps
 	 * @private
@@ -324,7 +331,18 @@ var p = Text.prototype = new DisplayObject();
 		// Chrome 17 will fail to draw the text if the last param is included but null, so we feed it a large value instead:
 			if (this.outline) { ctx.strokeText(text, 0, y, this.maxWidth||0xFFFF); }
 			else { ctx.fillText(text, 0, y, this.maxWidth||0xFFFF); }
-		
+	}
+
+	/**
+	 * @method _getDimensions
+	 * @protected
+	 * @return {Point}
+	 **/
+	p._getDimensions = function() {
+		return new Point(
+			this.maxWidth || this.lineWidth || this.getMeasuredWidth(),
+			this.getNumLines() * (this.lineHeight || this.getMeasuredLineHeight())
+		);
 	}
 
 window.Text = Text;

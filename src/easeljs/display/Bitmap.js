@@ -61,15 +61,14 @@ var p = Bitmap.prototype = new DisplayObject();
 	 * @property sourceRect
 	 * @type Rectangle
 	 * @default null
-	 */
+	 **/
 	p.sourceRect = null;
 	
-	// constructor:
-
+// constructor:
 	/**
 	 * @property DisplayObject_initialize
 	 * @type Function
-    * @private
+     * @private
 	 **/
 	p.DisplayObject_initialize = p.initialize;
 
@@ -89,7 +88,6 @@ var p = Bitmap.prototype = new DisplayObject();
 	}
 	
 // public methods:
-
 	/**
 	 * Returns true or false indicating whether the display object would be visible if drawn to a canvas.
 	 * This does not account for whether it would be visible within the boundaries of the stage.
@@ -171,6 +169,22 @@ var p = Bitmap.prototype = new DisplayObject();
 	}
 
 // private methods:
+	/**
+	 * @method _getDimensions
+	 * @protected
+	 * @return {Point}
+	 **/
+	p._getDimensions = function() {
+		var dimensions, image = this.image;
+		if (!image) return new Point();
+
+		if (image instanceof HTMLImageElement) {
+			dimensions = new Point(image.naturalWidth, image.naturalHeight);
+		} else if (image instanceof HTMLVideoElement) {
+			dimensions = new Point(image.videoWidth, image.videoHeight);
+		}
+		return dimensions || new Point(image.width, image.height);
+	}
 
 window.Bitmap = Bitmap;
 }(window));

@@ -41,7 +41,7 @@ var Stage = function(canvas) {
 }
 var p = Stage.prototype = new Container();
 
-// static properties:
+// private static properties:
 	/**
 	 * @property _snapToPixelEnabled
 	 * @protected
@@ -109,7 +109,6 @@ var p = Stage.prototype = new Container();
 	p.tickOnUpdate = true;
 
 // private properties:
-
 	/**
 	 * @property _activeMouseEvent
 	 * @protected
@@ -123,6 +122,13 @@ var p = Stage.prototype = new Container();
 	 * @type DisplayObject
 	 **/
 	p._activeMouseTarget = null;
+
+	/**
+	 * @property _activeDragTarget
+	 * @protected
+	 * @type DisplayObject
+	 **/
+	p._activeDragTarget = null;
 
 	/**
 	 * @property _mouseOverIntervalID
@@ -174,7 +180,6 @@ var p = Stage.prototype = new Container();
 	}
 
 // public methods:
-
 	/**
 	 * @event tick
 	 * Broadcast to children when the stage is updated.
@@ -310,8 +315,16 @@ var p = Stage.prototype = new Container();
 		return "[Stage (name="+this.name +")]";
 	}
 
-	// private methods:
-
+// private methods:
+	/**
+	 * @method _getDimensions
+	 * @protected
+	 * @return {Point}
+	 **/
+	p._getDimensions = function() {
+		return new Point(this.canvas.width, this.canvas.height);
+	}
+	
 	/**
 	 * @method _enableMouseEvents
 	 * @protected
@@ -329,7 +342,7 @@ var p = Stage.prototype = new Container();
 	/**
 	 * @method _enableKeyboardEvents
 	 * @protected
-	 */
+	 **/
 	p._enableKeyboardEvents = function() {
 		var o = this;
 		var evtTarget = window.addEventListener ? window : document;
@@ -341,7 +354,7 @@ var p = Stage.prototype = new Container();
 	 * @method _handleKeyUp
 	 * @protected
 	 * @param {KeyboardEvent} e
-	 */
+	 **/
 	p._handleKeyUp = function(e) {
 		if (this.hasEventListener(KeyboardEvent.KEY_UP)) {
 			var evt = new KeyboardEvent(KeyboardEvent.KEY_UP, e.keyCode, e.charCode, e.ctrlKey, e.altKey, e.shiftKey, e);
@@ -353,7 +366,7 @@ var p = Stage.prototype = new Container();
 	 * @method _handleKeyDown
 	 * @protected
 	 * @param {KeyboardEvent} e
-	 */
+	 **/
 	p._handleKeyDown = function(e) {
 		if (this.hasEventListener(KeyboardEvent.KEY_DOWN)) {
 			var evt = new KeyboardEvent(KeyboardEvent.KEY_DOWN, e.keyCode, e.charCode, e.ctrlKey, e.altKey, e.shiftKey, e);
@@ -367,21 +380,20 @@ var p = Stage.prototype = new Container();
 	 * @param {MouseEvent} e
 	 **/
 	p._handleMouseMove = function(e) {
-
 		if (!this.canvas) {
 			this.mouseX = this.mouseY = null;
 			return;
 		}
 		if(!e){ e = window.event; }
 
-		var inBounds = this.mouseInBounds;
 		this._updateMousePosition(e.pageX, e.pageY);
-		if (!inBounds && !this.mouseInBounds) { return; }
+		if (!this.mouseInBounds) { return; }
 
 		var evt = new MouseEvent(MouseEvent.MOUSE_MOVE, this.mouseX, this.mouseY, e);
 
 		if (this.hasEventListener(MouseEvent.MOUSE_MOVE)) { this.dispatchEvent(evt); }
 		if (this._activeMouseEvent && this._activeMouseEvent.hasEventListener(MouseEvent.MOUSE_MOVE)) { this._activeMouseEvent.dispatchEvent(evt); }
+		if (this._activeDragTarget) { this._activeDragTarget.drag(evt); }
 	}
 
 	/**
@@ -391,7 +403,6 @@ var p = Stage.prototype = new Container();
 	 * @param {Number} pageY
 	 **/
 	p._updateMousePosition = function(pageX, pageY) {
-
 		var o = this.canvas;
 		do {
 			pageX -= o.offsetLeft;

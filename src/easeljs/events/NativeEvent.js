@@ -11,14 +11,14 @@ var NativeEvent = function(type, nativeEvent) {
 }
 var p = NativeEvent.prototype = new Event();
 
-// public properties :
+// public properties:
 	/**
 	 * @property nativeEvent
 	 * @type Object
 	 **/
 	p.nativeEvent = null;
 
-// constructor :
+// constructor:
 	/**
 	 * @property Event_initialize
 	 * @type Function
@@ -36,7 +36,7 @@ var p = NativeEvent.prototype = new Event();
 		this.nativeEvent = nativeEvent;
 	}
 
-// public methods :
+// public methods:
 	/**
 	 * @method clone
 	 * @return {NativeEvent}

@@ -10,7 +10,7 @@ var Event = function(type) {
 }
 var p = Event.prototype = new EventDispatcher();
 
-// public properties :
+// public properties:
 	/**
 	 * @property target
 	 * @readonly
@@ -25,7 +25,7 @@ var p = Event.prototype = new EventDispatcher();
 	 **/
 	p.type = null;
 
-// constructor :
+// constructor:
 	/**
 	 * @property EventDispatcher_initialize
 	 * @type Function
@@ -43,7 +43,7 @@ var p = Event.prototype = new EventDispatcher();
 		this.type = type;
 	}
 
-// public methods :
+// public methods:
 	/**
 	 * @method clone
 	 * @return {Event}

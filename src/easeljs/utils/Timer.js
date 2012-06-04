@@ -13,7 +13,7 @@ var Timer = function(delay, repeatCount) {
 var p = Timer.prototype = new EventDispatcher();
 var s = Timer;
 
-// public properties :
+// public properties:
 	/**
 	 * @property delay
 	 * @type Number
@@ -40,7 +40,7 @@ var s = Timer;
 	 **/
 	p.running = false;
 
-// private properties :
+// private properties:
 	/**
 	 * @property _startTime
 	 * @protected
@@ -56,7 +56,7 @@ var s = Timer;
 	 **/
 	s._timers = [];
 
-// constructor :
+// constructor:
 	/**
 	 * @property EventDispatcher_initialize
 	 * @type Function
@@ -77,7 +77,7 @@ var s = Timer;
 		s._timers.push(this);
 	}
 
-// public methods :
+// public methods:
 	/**
 	 * @method reset
 	 **/

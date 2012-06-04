@@ -12,7 +12,7 @@ var TimerEvent = function(type) {
 var p = TimerEvent.prototype = new Event();
 var s = TimerEvent;
 
-// public properties :
+// public properties:
 	/**
 	 * @property KEY_DOWN
 	 * @static
@@ -27,7 +27,7 @@ var s = TimerEvent;
 	 **/
 	s.TIMER_COMPLETE = "timerComplete";
 
-// constructor :
+// constructor:
 	/**
 	 * @property NativeEvent_initialize
 	 * @type Function
@@ -44,7 +44,7 @@ var s = TimerEvent;
 		this.Event_initialize(type);
 	}
 
-// public methods :
+// public methods:
 	/**
 	 * @method clone
 	 * @return {TimerEvent}

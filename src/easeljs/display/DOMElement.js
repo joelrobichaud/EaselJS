@@ -73,7 +73,7 @@ var p = DOMElement.prototype = new DisplayObject();
 	/**
 	 * @property DisplayObject_initialize
 	 * @type Function
-   * @private
+	 * @private
 	 **/
 	p.DisplayObject_initialize = p.initialize;
 
@@ -81,7 +81,7 @@ var p = DOMElement.prototype = new DisplayObject();
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	*/
+	 **/
 	p.initialize = function(htmlElement) {
 		if (typeof(htmlElement)=="string") { htmlElement = document.getElementById(htmlElement); }
 		this.DisplayObject_initialize();
@@ -134,43 +134,43 @@ var p = DOMElement.prototype = new DisplayObject();
 	/**
 	 * Not applicable to DOMElement.
 	 * @method cache
-	 */
+	 **/
 	p.cache = function() {}
 
 	/**
 	 * Not applicable to DOMElement.
 	 * @method uncache
-	 */
+	 **/
 	p.uncache = function() {}
 
 	/**
 	 * Not applicable to DOMElement.
 	 * @method updateCache
-	 */
+	 **/
 	p.updateCache = function() {}
 
 	/**
 	 * Not applicable to DOMElement.
 	 * @method updateCache
-	 */
+	 **/
 	p.hitTest = function() {}
 
 	/**
 	 * Not applicable to DOMElement.
 	 * @method localToGlobal
-	 */
+	 **/
 	p.localToGlobal = function() {}
 
 	/**
 	 * Not applicable to DOMElement.
 	 * @method globalToLocal
-	 */
+	 **/
 	p.globalToLocal = function() {}
 
 	/**
 	 * Not applicable to DOMElement.
 	 * @method localToLocal
-	 */
+	 **/
 	p.localToLocal = function() {}
 
 	/**

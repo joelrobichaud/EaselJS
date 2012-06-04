@@ -57,28 +57,28 @@ var p = Shadow.prototype;
 	 * property color
 	 * @type String
 	 * @default null
-	*/
+	 **/
 	p.color = null;
 	
 	/** The x offset of the shadow.
 	 * property offsetX
 	 * @type Number
 	 * @default 0
-	*/
+	 **/
 	p.offsetX = 0;
 	
 	/** The y offset of the shadow.
 	 * property offsetY
 	 * @type Number
 	 * @default 0
-	*/
+	 **/
 	p.offsetY = 0;
 	
 	/** The blur of the shadow.
 	 * property blur
 	 * @type Number
 	 * @default 0
-	*/
+	 **/
 	p.blur = 0;
 	
 // constructor:

@@ -56,7 +56,6 @@ var p = Container.prototype = new DisplayObject();
 	p.children = null;
 
 // constructor:
-
 	/**
 	 * @property DisplayObject_initialize
 	 * @type Function
@@ -68,14 +67,13 @@ var p = Container.prototype = new DisplayObject();
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	*/
+	 **/
 	p.initialize = function() {
 		this.DisplayObject_initialize();
 		this.children = [];
 	}
 
 // public methods:
-
 	/**
 	 * Returns true or false indicating whether the display object would be visible if drawn to a canvas.
 	 * This does not account for whether it would be visible within the boundaries of the stage.
@@ -401,7 +399,7 @@ var p = Container.prototype = new DisplayObject();
 		return "[Container (name="+  this.name +")]";
 	}
 
-// private properties:
+// private methods:
 	/**
 	 * @method _tick
 	 * @protected
@@ -487,6 +485,84 @@ var p = Container.prototype = new DisplayObject();
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @method _getDimensions
+	 * @protected
+	 * @return {Point}
+	 **/
+	Container.prototype._getDimensions = function(raw) {
+		var l = this.children.length;
+		if (l === 0) return new Point();
+		
+		var children = this.children.slice(0), dimensions = new Rectangle();
+		for (var i = 0; i < l; i++) {
+			if (children[i].parentContainerInheritsSize) {
+				this._expandDimensionsFromObject(dimensions, children[i], raw);
+			}
+		}
+		return new Point(dimensions.width, dimensions.height);
+	}
+
+	/**
+	 * @method _expandDimensionsFromObject
+	 * @protected
+	 * @param {Rectangle} dimensions
+	 * @param {DisplayObject} object
+	 **/
+	Container.prototype._expandDimensionsFromObject = function(dimensions, object, raw) {
+		var isAbove, isTaller, isLeft, isWider, posX = object.x, posY = object.y,
+			objectDimensions = raw ? object.getRawSize() : object.getSize();
+
+		posX -= object.regX;
+		posY -= object.regY;
+
+		if (object instanceof Text) {
+			switch (object.textAlign) {
+				case "center":
+					posX -= objectDimensions.width * 0.5; break;
+				case "right": case "end":
+					posX -= objectDimensions.width;
+			}
+			switch (object.textBaseline) {
+				case "middle":
+					posY += objectDimensions.height * 0.5; break;
+				case "ideographic": case "bottom": case "alphabetic":
+					// This is not the exact value for all of these baselines but it's close enough
+					posY += objectDimensions.height;
+			}
+		}
+		
+		// Expand width
+		isLeft = posX < dimensions.x;
+		isWider = posX + objectDimensions.width > dimensions.x + dimensions.width;
+		
+		if (isLeft && isWider) {
+			dimensions.width += posX + objectDimensions.width - (dimensions.x + dimensions.width);
+			dimensions.width += dimensions.x - posX;
+			dimensions.x = posX;
+		} else if (isLeft) {
+			dimensions.width += dimensions.x - posX;
+			dimensions.x = posX;
+		} else if (isWider) {
+			dimensions.width += posX + objectDimensions.width - (dimensions.x + dimensions.width);
+		}
+
+		// Expand height
+		isAbove = posY < dimensions.y;
+		isTaller = posY + objectDimensions.height > dimensions.y + dimensions.height;
+
+		if (isAbove && isTaller) {
+			dimensions.height += posY + objectDimensions.height - (dimensions.y + dimensions.height);
+			dimensions.height += dimensions.y - posY;
+			dimensions.y = posY;
+		} else if (isAbove) {
+			dimensions.height += dimensions.y - posY;
+			dimensions.y = posY;
+		} else if (isTaller) {
+			dimensions.height += posY + objectDimensions.height - (dimensions.y + dimensions.height);
+		}
 	}
 
 window.Container = Container;

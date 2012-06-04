@@ -29,8 +29,6 @@
 (function(window) {
 
 // used to create the instruction lists used in Graphics:
-
-
 /**
 * Inner class used by the Graphics class. Used to create the instruction lists used in Graphics:
 * @class Command
@@ -78,9 +76,7 @@ var Graphics = function() {
 }
 var p = Graphics.prototype;
 
-// static public methods:
-	
-	
+// public static methods:
 	/**
 	 * Returns a CSS compatible color string based on the specified RGB numeric color values in the format 
 	 * "rgba(255,255,255,1.0)", or if alpha is null then in the format "rgb(255,255,255)". For example,
@@ -131,7 +127,8 @@ var p = Graphics.prototype;
 			return "hsla("+(hue%360)+","+saturation+"%,"+lightness+"%,"+alpha+")";
 		}
 	}
-	
+
+// public static properties:
 	/**
 	 * Map of Base64 characters to values. Used by decodePath().
 	 * @property BASE_64
@@ -166,6 +163,7 @@ var p = Graphics.prototype;
 	 **/
 	Graphics.STROKE_JOINTS_MAP = ["miter", "round", "bevel"];
 	
+// private static properties:
 	/**
 	 * @property _ctx
 	 * @static
@@ -197,10 +195,8 @@ var p = Graphics.prototype;
 	 * @type Command
 	 **/
 	Graphics.strokeCmd = new Command(Graphics._ctx.stroke, [], false);
-	
-// public properties
 
-// private properties
+// private properties:
 	/**
 	 * @property _strokeInstructions
 	 * @protected
@@ -258,7 +254,22 @@ var p = Graphics.prototype;
 	 * @default false
 	 **/
 	p._dirty = false;
+
+	/**
+	 * @property _width
+	 * @protected
+	 * @type Number
+	 */
+	p._width = 0;
+
+	/**
+	 * @property _height
+	 * @protected
+	 * @type Number
+	 */
+	p._height = 0;
 	
+// constructor:
 	/** 
 	 * Initialization method.
 	 * @method initialize
@@ -438,7 +449,6 @@ var p = Graphics.prototype;
 		return this;
 	}
 	
-	
 // public methods that roughly map to Flash graphics APIs:
 	/**
 	 * Clears all drawing instructions, effectively reseting this Graphics instance.
@@ -598,7 +608,6 @@ var p = Graphics.prototype;
 		return this;
 	}
 	
-	
 	/**
 	 * Begins a radial gradient stroke. This ends the current subpath. For example, the following code defines a red to blue radial gradient centered at (100, 100), with a radius of 50, and draws a rectangle to display it:<br/>
 	 * myGraphics.setStrokeStyle(10).beginRadialGradientStroke(["#F00","#00F"], [0, 1], 100, 100, 0, 100, 100, 50).drawRect(50, 90, 150, 110);
@@ -637,7 +646,6 @@ var p = Graphics.prototype;
 		this._strokeInstructions = [new Command(this._setProp, ["strokeStyle", o], false)];
 		return this;
 	}
-	
 	
 	/**
 	 * Ends the current subpath, and begins a new one with no stroke. Functionally identical to beginStroke(null).
@@ -719,19 +727,19 @@ var p = Graphics.prototype;
 	
 	/**
 	 * Draws a circle with the specified radius at (x, y).
-	*
+	 *
 	 * <pre><code>var g = new Graphics();
-	*	g.setStrokeStyle(1);
-	*	g.beginStroke(Graphics.getRGB(0,0,0));
-	*	g.beginFill(Graphics.getRGB(255,0,0));
-	*	g.drawCircle(0,0,3);
-	*
-	*	var s = new Shape(g);
-	*		s.x = 100;
-	*		s.y = 100;
-	*
-	*	stage.addChild(s);
-	*	stage.update();</code></pre>
+	 *	g.setStrokeStyle(1);
+	 *	g.beginStroke(Graphics.getRGB(0,0,0));
+	 *	g.beginFill(Graphics.getRGB(255,0,0));
+	 *	g.drawCircle(0,0,3);
+	 *
+	 *	var s = new Shape(g);
+	 *		s.x = 100;
+	 *		s.y = 100;
+	 *
+	 *	stage.addChild(s);
+	 *	stage.update();</code></pre>
 	 * @method drawCircle
 	 * @param {Number} x x coordinate center point of circle.
 	 * @param {Number} y y coordinate center point of circle.
@@ -871,9 +879,35 @@ var p = Graphics.prototype;
 	}
 	
 	/**
+	 * @method setWidth
+	 * @param {Number} value
+	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
+	 **/
+	p.setWidth = function(value) { this._width = value; return this; }
+
+	/**
+	 * @method setHeight
+	 * @param {Number} value
+	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
+	 **/
+	p.setHeight = function(value) { this._height = value; return this; }
+
+	/**
+	 * @method getWidth
+	 * @return {Number}
+	 **/
+	p.getWidth = function(value) { return this._width; }
+
+	/**
+	 * @method getHeight
+	 * @return {Number}
+	 **/
+	p.getHeight = function(value) { return this._height; }
+	
+	/**
 	 * Returns a clone of this Graphics instance.
 	 * @method clone
-	 @return {Graphics} A clone of the current Graphics instance.
+	 * @return {Graphics} A clone of the current Graphics instance.
 	 **/
 	p.clone = function() {
 		var o = new Graphics();
@@ -1088,7 +1122,6 @@ var p = Graphics.prototype;
 	 * type Function
 	 **/
 	p.p = p.decodePath;
-	
 	
 // private methods:
 	/**

@@ -48,6 +48,7 @@ var MovieClip = function(mode, startPosition, loop, labels) {
 }
 var p = MovieClip.prototype = new Container();
 
+// public static properties:
 	/**
 	 * Read-only. The MovieClip will advance independently of its parent, even if its parent is paused.
 	 * This is the default mode.
@@ -78,7 +79,6 @@ var p = MovieClip.prototype = new Container();
 	MovieClip.SYNCHED = "synched";
 
 // public properties:
-	
 	/**
 	 * Controls how this MovieClip advances its time. Must be one of 0 (INDEPENDENT), 1 (SINGLE_FRAME), or 2 (SYNCHED).
 	 * See each constant for a description of the behaviour.
@@ -93,7 +93,7 @@ var p = MovieClip.prototype = new Container();
 	 * @property startPosition
 	 * @type Number
 	 * @default 0
-	 */
+	 **/
 	p.startPosition = 0;
 	
 	/**
@@ -101,7 +101,7 @@ var p = MovieClip.prototype = new Container();
 	 * @property loop
 	 * @type Boolean
 	 * @default true
-	 */
+	 **/
 	p.loop = true;
 
 	/**
@@ -109,31 +109,30 @@ var p = MovieClip.prototype = new Container();
 	 * instance is initialized.
 	 * @property timeline
 	 * @type Timeline
-	 */
+	 **/
 	p.timeline = null;
 
 	/**
 	 * If true, the MovieClip's position will not advance when ticked.
 	 * @property paused
 	 * @type Boolean
-	 */
+	 **/
 	p.paused = false;
 	
 	/**
 	 * If true, actions in this MovieClip's tweens will be run when the playhead advances.
 	 * @property actionsEnabled
 	 * @type Boolean
-	 */
+	 **/
 	p.actionsEnabled = true;
 	
 // private properties:
-
 	/**
 	 * @property _synchOffset
 	 * @type Number
 	 * @default 0
 	 * @private
-	 */
+	 **/
 	p._synchOffset = 0;
 	
 	/**
@@ -141,7 +140,7 @@ var p = MovieClip.prototype = new Container();
 	 * @type Number
 	 * @default -1
 	 * @private
-	 */
+	 **/
 	p._prevPos = -1;
 	
 	/**
@@ -149,7 +148,7 @@ var p = MovieClip.prototype = new Container();
 	 * @type Number
 	 * @default 0
 	 * @private
-	 */
+	 **/
 	p._prevPosition = 0;
 	
 	/**
@@ -157,15 +156,14 @@ var p = MovieClip.prototype = new Container();
 	 * @property _managed
 	 * @type Object
 	 * @private
-	 */
+	 **/
 	p._managed;
 	
 // constructor:
-
 	/**
 	 * @property DisplayObject_initialize
 	 * @type Function
-    * @private
+     * @private
 	 **/
 	p.Container_initialize = p.initialize;
 
@@ -219,7 +217,6 @@ var p = MovieClip.prototype = new Container();
 		this._updateTimeline();
 		this.Container_draw(ctx, ignoreCache, _mtx);
 	}
-	
 	
 	/**
 	 * Sets paused to false.
@@ -276,7 +273,6 @@ var p = MovieClip.prototype = new Container();
 	}
 	
 // private methods:
-	
 	/**
 	 * @property Container__tick
 	 * @type Function

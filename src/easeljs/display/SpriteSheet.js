@@ -122,7 +122,6 @@ var p = SpriteSheet.prototype;
 	 **/
 	p.complete = true;
 	
-	
 	/**
 	 * The onComplete callback is called when all images are loaded. Note that this only fires if the images
 	 * were not fully loaded when the sprite sheet was initialized. You should check the complete property 
@@ -284,7 +283,7 @@ var p = SpriteSheet.prototype;
 	 * sheet if the animation param is omitted.
 	 * @param {String} animation The name of the animation to get a frame count for.
 	 * @return {Number} The number of frames in the animation, or in the entire sprite sheet if the animation param is omitted.
-	*/
+	 **/
 	p.getNumFrames = function(animation) {
 		if (animation == null) {
 			return this._frames ? this._frames.length : this._numFrames;

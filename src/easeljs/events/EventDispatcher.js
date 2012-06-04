@@ -10,7 +10,7 @@ var EventDispatcher = function() {
 var p = EventDispatcher.prototype = {};
 var s = EventDispatcher;
 
-// private properties :
+// private properties:
 	/**
 	 * @property _handlers
 	 * @protected
@@ -28,7 +28,7 @@ var s = EventDispatcher;
 		this._handlers = {};
 	}
 
-// public methods :
+// public methods:
 	/**
 	 * @method addEventListener
 	 * @param {String} type
