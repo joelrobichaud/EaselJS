@@ -119,6 +119,20 @@ var p = Container.prototype = new DisplayObject();
 		}
 		return true;
 	}
+
+	/**
+	 * @method dispatchEventToChildren
+	 * @param {Event} evt
+	 **/
+	p.dispatchEventToChildren = function(evt) {
+		var l = this.children.length;
+		if (l === 0) { return; }
+		
+		var children = this.children.slice(0);
+		for (var i = 0; i < l; i++) {
+			children[i].dispatchEvent(evt);
+		}
+	}
 	
 	/**
 	 * Adds a child to the top of the display list. You can also add multiple children, such as "addChild(child1, child2, ...);".
@@ -137,6 +151,11 @@ var p = Container.prototype = new DisplayObject();
 		if (child.parent) { child.parent.removeChild(child); }
 		child.parent = this;
 		this.children.push(child);
+		if (child.getStage()) {
+			var evt = new Event(Event.ADDED_TO_STAGE);
+			if (child instanceof Container) { child.dispatchEventToChildren(evt); }
+			child.dispatchEvent(evt);
+		}
 		return child;
 	}
 
@@ -163,6 +182,11 @@ var p = Container.prototype = new DisplayObject();
 		if (child.parent) { child.parent.removeChild(child); }
 		child.parent = this;
 		this.children.splice(index, 0, child);
+		if (child.getStage()) {
+			var evt = new Event(Event.ADDED_TO_STAGE);
+			if (child instanceof Container) { child.dispatchEventToChildren(evt); }
+			child.dispatchEvent(evt);
+		}
 		return child;
 	}
 
@@ -203,7 +227,14 @@ var p = Container.prototype = new DisplayObject();
 		}
 		if (index < 0 || index > this.children.length-1) { return false; }
 		var child = this.children[index];
-		if (child) { child.parent = null; }
+		if (child) {
+			if (child.getStage()) {
+				var evt = new Event(Event.REMOVED_FROM_STAGE);
+				if (child instanceof Container) { child.dispatchEventToChildren(evt); }
+				child.dispatchEvent(evt);
+			}
+			child.parent = null;
+		}
 		this.children.splice(index, 1);
 		return true;
 	}
@@ -213,8 +244,16 @@ var p = Container.prototype = new DisplayObject();
 	 * @method removeAllChildren
 	 **/
 	p.removeAllChildren = function() {
-		var kids = this.children;
-		while (kids.length) { kids.pop().parent = null; }
+		var kids = this.children, kid;
+		while (kids.length) {
+			kid = kids.pop();
+			if (kid.getStage()) {
+				var evt = new Event(Event.REMOVED_FROM_STAGE);
+				if (kid instanceof Container) { kid.dispatchEventToChildren(evt); }
+				kid.dispatchEvent(evt);
+			}
+			kids.parent = null;
+		}
 	}
 
 	/**

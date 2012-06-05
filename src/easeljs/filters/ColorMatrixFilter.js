@@ -29,12 +29,12 @@
 (function(window) {
 
 /**
-* Applies color transforms.
-* @class ColorMatrixFilter
-* @constructor
-* @augments Filter
-* @param {Number} blurX
-**/
+ * Applies color transforms.
+ * @class ColorMatrixFilter
+ * @extends Filter
+ * @constructor
+ * @param {Number} blurX
+ **/
 var ColorMatrixFilter = function(matrix) {
   this.initialize(matrix);
 }
@@ -111,11 +111,10 @@ var p = ColorMatrixFilter.prototype = new Filter();
 		return "[ColorMatrixFilter]";
 	}
 	
-	
 	/**
 	 * Returns a clone of this ColorMatrixFilter instance.
 	 * @method clone
-	 @return {ColorMatrixFilter} A clone of the current ColorMatrixFilter instance.
+	 * @return {ColorMatrixFilter} A clone of the current ColorMatrixFilter instance.
 	 **/
 	p.clone = function() {
 		return new ColorMatrixFilter(this.matrix);

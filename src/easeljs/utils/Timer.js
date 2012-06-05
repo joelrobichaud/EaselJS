@@ -68,7 +68,7 @@ var s = Timer;
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	**/
+	 **/
 	p.initialize = function(delay, repeatCount) {
 		this.EventDispatcher_initialize();
 

@@ -92,7 +92,7 @@
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	 */
+	 **/
 	p.initialize = function(brightness,contrast,saturation,hue) {
 		this.reset();
 		this.adjustColor(brightness,contrast,saturation,hue);
@@ -103,7 +103,7 @@
 	 * Resets the matrix to identity values.
 	 * @method reset
 	 * @return {ColorMatrix} The ColorMatrix instance the method is called on (useful for chaining calls.)
-	 */
+	 **/
 	p.reset = function() {
 		return this.copyMatrix(ColorMatrix.IDENTITY_MATRIX);
 	};
@@ -142,7 +142,7 @@
 			0,0,0,0,1
 		]);
 		return this;
-	},
+	};
 	
 	/**
 	 * Adjusts the contrast of pixel color.
@@ -197,7 +197,6 @@
 		]);
 		return this;
 	};
-	
 	
 	/**
 	 * Adjusts the hue of the pixel color.
@@ -264,7 +263,6 @@
 	};
 	
 // private methods:
-	
 	/**
 	 * @method _multiplyMatrix
 	 * @protected
@@ -295,7 +293,6 @@
 		return Math.min(limit,Math.max(-limit,value));
 	};
 	
-	// 
 	/**
 	 * Makes sure matrixes are 5x5 (25 long).
 	 * @method _fixMatrix

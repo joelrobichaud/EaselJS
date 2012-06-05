@@ -68,8 +68,6 @@ var Ticker = function() {
 	*/	
 	
 // private static properties:
-
-	
 	/** 
 	 * @property _listeners
 	 * @type Array[Object]
@@ -169,7 +167,6 @@ var Ticker = function() {
 	 * @protected 
 	 **/
 	Ticker._timeoutID = null;
-	
 	
 // public static methods:
 	/**

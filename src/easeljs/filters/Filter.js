@@ -29,10 +29,10 @@
 (function(window) {
 
 /**
-* Base class that all filters should inherit from.
-* @class Filter
-* @constructor
-**/
+ * Base class that all filters should inherit from.
+ * @class Filter
+ * @constructor
+ **/
 var Filter = function() {
   this.initialize();
 }
@@ -80,7 +80,6 @@ var p = Filter.prototype;
 	p.toString = function() {
 		return "[Filter]";
 	}
-	
 	
 	/**
 	 * Returns a clone of this Filter instance.

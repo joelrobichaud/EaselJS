@@ -29,15 +29,16 @@
 (function(window) {
 
 /**
-* Global utility for generating sequential unique ID numbers.
-* The UID class uses a static interface (ex. UID.get()) and should not be instantiated.
-* @class UID
-* @static
-**/
+ * Global utility for generating sequential unique ID numbers.
+ * The UID class uses a static interface (ex. UID.get()) and should not be instantiated.
+ * @class UID
+ * @static
+ **/
 var UID = function() {
 	throw "UID cannot be instantiated";
 }
 
+// private static properties:
 	/**
 	 * @property _nextID
 	 * @type Number
@@ -45,6 +46,7 @@ var UID = function() {
 	 **/
 	UID._nextID = 0;
 
+// public static methods:
 	/**
 	 * Returns the next unique id.
 	 * @method get

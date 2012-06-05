@@ -29,24 +29,25 @@
 (function(window) {
 // constructor:
 /**
-* The SpriteSheetUtils class is a collection of static methods for working
-* with sprite sheets.  A sprite sheet is a series of images (usually animation frames)
-* combined into a single image on a regular grid. For example, an animation consisting
-* of 8 100x100 images could be combined into a 400x200 sprite sheet (4 frames across by 2 high).
-* The SpriteSheetUtils class uses a static interface and should not be instantiated.
-* @class SpriteSheetUtils
-* @static
-**/
+ * The SpriteSheetUtils class is a collection of static methods for working
+ * with sprite sheets.  A sprite sheet is a series of images (usually animation frames)
+ * combined into a single image on a regular grid. For example, an animation consisting
+ * of 8 100x100 images could be combined into a 400x200 sprite sheet (4 frames across by 2 high).
+ * The SpriteSheetUtils class uses a static interface and should not be instantiated.
+ * @class SpriteSheetUtils
+ * @static
+ **/
 var SpriteSheetUtils = function() {
 	throw "SpriteSheetUtils cannot be instantiated";
 }
 
+// private static properties:
 	/**
 	 * @property _workingCanvas
 	 * @static
 	 * @type HTMLCanvasElement
 	 * @protected
-	*/
+	 **/
 	SpriteSheetUtils._workingCanvas = document.createElement("canvas");
 
 	/**
@@ -54,7 +55,7 @@ var SpriteSheetUtils = function() {
 	 * @static
 	 * @type CanvasRenderingContext2D
 	 * @protected
-	*/
+	 **/
 	SpriteSheetUtils._workingContext = SpriteSheetUtils._workingCanvas.getContext("2d");
 
 // public static methods:
@@ -91,7 +92,7 @@ var SpriteSheetUtils = function() {
 	 * @param {Number} frame The frame number or animation name to extract. If an animation
 	 * name is specified, only the first frame of the animation will be extracted.
 	 * @return {Image} a single frame of the specified sprite sheet as a new PNG image.
-	*/
+	 **/
 	SpriteSheetUtils.extractFrame = function(spriteSheet, frame) {
 		if (isNaN(frame)) {
 			frame = spriteSheet.getAnimation(frame).frames[0];
@@ -108,8 +109,15 @@ var SpriteSheetUtils = function() {
 		return img;
 	}
 
-	
 // private static methods:
+	/**
+	 * @method _flip
+	 * @static
+	 * @param {Image} spriteSheet The SpriteSheet instance to extract a frame from.
+	 * @param {Integer} count
+	 * @param {Number} h
+	 * @param {Number} v
+	 **/
 	SpriteSheetUtils._flip = function(spriteSheet, count, h, v) {
 		var imgs = spriteSheet._images;
 		var canvas = SpriteSheetUtils._workingCanvas;

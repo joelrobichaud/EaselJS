@@ -51,7 +51,6 @@ var p = SpriteSheetBuilder.prototype;
 	SpriteSheetBuilder.ERR_RUNNING = "a build is already running";
 
 // public properties:
-
 	/**
 	 * The maximum width for the images (not individual frames) in the generated sprite sheet. It is recommended to use
 	 * a power of 2 for this value (ex. 1024, 2048, 4096). If the frames cannot all fit within the max dimensions, then
@@ -89,7 +88,6 @@ var p = SpriteSheetBuilder.prototype;
 	p.scale = 1;
 
 // private properties:
-
 	/**
 	 * @property _frames
 	 * @protected
@@ -165,7 +163,6 @@ var p = SpriteSheetBuilder.prototype;
 	}
 
 // public methods:
-	
 	/**
 	 * Adds a frame to the sprite sheet. Note that the frame will not be drawn until you call build. The optional
 	 * setup params allow you to have a function run immediately before the draw occurs. For example, this allows you to

@@ -29,21 +29,25 @@
 (function(window) {
 
 /**
-* BoxBlurFilter applies a box blur to DisplayObjects
-* @class BoxBlurFilter
-* @augments Filter
-* @constructor
-* @param {Number} blurX
-* @param {Number} blurY
-* @param {Number} quality
-**/
+ * BoxBlurFilter applies a box blur to DisplayObjects
+ * @class BoxBlurFilter
+ * @augments Filter
+ * @constructor
+ * @param {Number} blurX
+ * @param {Number} blurY
+ * @param {Number} quality
+ **/
 var BoxBlurFilter = function( blurX, blurY, quality ) {
   this.initialize( blurX, blurY, quality );
 }
 var p = BoxBlurFilter.prototype = new Filter();
 
 // constructor:
-	/** @ignore */
+	/**
+	 * Initialization method.
+	 * @method initialize
+	 * @protected
+	 **/
 	p.initialize = function( blurX, blurY, quality ) {
 		if ( isNaN(blurX) || blurX < 0 ) blurX = 0;
 		this.blurX = blurX | 0;
@@ -54,7 +58,6 @@ var p = BoxBlurFilter.prototype = new Filter();
 	}
 
 // public properties:
-
 	/**
 	 * Horizontal blur radius
 	 * @property blurX
@@ -247,10 +250,6 @@ var p = BoxBlurFilter.prototype = new Filter();
 	p.toString = function() {
 		return "[BoxBlurFilter]";
 	}
-
-// private methods:
-
-
 
 window.BoxBlurFilter = BoxBlurFilter;
 }(window));

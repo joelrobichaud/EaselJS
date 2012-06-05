@@ -29,14 +29,14 @@
 (function(window) {
 
 /**
-* Represents a rectangle as defined by the points (x, y) and (x+width, y+height).
-* @class Rectangle
-* @constructor
-* @param {Number} x X position. Default is 0.
-* @param {Number} y Y position. Default is 0.
-* @param {Number} width Width. Default is 0.
-* @param {Number} height Height. Default is 0.
-**/
+ * Represents a rectangle as defined by the points (x, y) and (x+width, y+height).
+ * @class Rectangle
+ * @constructor
+ * @param {Number} x X position. Default is 0.
+ * @param {Number} y Y position. Default is 0.
+ * @param {Number} width Width. Default is 0.
+ * @param {Number} height Height. Default is 0.
+ **/
 var Rectangle = function(x, y, width, height) {
   this.initialize(x, y, width, height);
 }
@@ -76,7 +76,7 @@ var p = Rectangle.prototype;
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	*/
+	 **/
 	p.initialize = function(x, y, width, height) {
 		this.x = (x == null ? 0 : x);
 		this.y = (y == null ? 0 : y);

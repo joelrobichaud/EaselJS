@@ -38,6 +38,7 @@ var Touch = function() {
 	throw "Touch cannot be instantiated";
 }
 
+// public static methods:
 	/**
 	 * Enables touch interaction for the specified EaselJS stage. This
 	 * currently only supports iOS, and simply maps single touch events
@@ -77,6 +78,7 @@ var Touch = function() {
 		}, false);
 	}
 
+// private static methods:
 	/**
 	 * @method _handleTouchStart
 	 * @protected

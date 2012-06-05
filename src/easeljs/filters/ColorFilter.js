@@ -166,11 +166,10 @@ var p = ColorFilter.prototype = new Filter();
 		return "[ColorFilter]";
 	}
 
-
 	/**
 	 * Returns a clone of this ColorFilter instance.
 	 * @method clone
-	 @return {ColorFilter} A clone of the current ColorFilter instance.
+	 * @return {ColorFilter} A clone of the current ColorFilter instance.
 	 **/
 	p.clone = function() {
 		return new ColorFilter(this.redMultiplier, this.greenMultiplier, this.blueMultiplier, this.alphaMultiplier, this.redOffset, this.greenOffset, this.blueOffset, this.alphaOffset);

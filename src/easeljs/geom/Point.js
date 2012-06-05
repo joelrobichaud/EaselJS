@@ -29,12 +29,12 @@
 (function(window) {
 
 /**
-* Represents a point on a 2 dimensional x / y coordinate system.
-* @class Point
-* @constructor
-* @param {Number} x X position. Default is 0.
-* @param {Number} y Y position. Default is 0.
-**/
+ * Represents a point on a 2 dimensional x / y coordinate system.
+ * @class Point
+ * @constructor
+ * @param {Number} x X position. Default is 0.
+ * @param {Number} y Y position. Default is 0.
+ **/
 var Point = function(x, y) {
   this.initialize(x, y);
 }
@@ -61,7 +61,7 @@ var p = Point.prototype;
 	 * Initialization method.
 	 * @method initialize
 	 * @protected
-	*/
+	 **/
 	p.initialize = function(x, y) {
 		this.x = (x == null ? 0 : x);
 		this.y = (y == null ? 0 : y);

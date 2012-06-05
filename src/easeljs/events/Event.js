@@ -9,6 +9,7 @@ var Event = function(type) {
 	this.initialize(type);
 }
 var p = Event.prototype = new EventDispatcher();
+var s = Event;
 
 // public properties:
 	/**
@@ -24,6 +25,27 @@ var p = Event.prototype = new EventDispatcher();
 	 * @type String
 	 **/
 	p.type = null;
+
+	/** 
+	 * @property ALL
+	 * @static
+	 * @type String
+	 **/
+	s.ALL = "all";
+
+	/**
+	 * @property ADDED_TO_STAGE
+	 * @static
+	 * @type String
+	 **/
+	s.ADDED_TO_STAGE = "addedToStage";
+
+	/**
+	 * @property REMOVED_FROM_STAGE
+	 * @static
+	 * @type String
+	 **/
+	s.REMOVED_FROM_STAGE = "removedFromStage";
 
 // constructor:
 	/**

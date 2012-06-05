@@ -29,23 +29,22 @@
 (function(window) {
 
 /**
-* Represents an affine transformation matrix, and provides tools for constructing and concatenating matrixes.
-* @class Matrix2D
-* @constructor
-* @param {Number} a Specifies the a property for the new matrix.
-* @param {Number} b Specifies the b property for the new matrix.
-* @param {Number} c Specifies the c property for the new matrix.
-* @param {Number} d Specifies the d property for the new matrix.
-* @param {Number} tx Specifies the tx property for the new matrix.
-* @param {Number} ty Specifies the ty property for the new matrix.
-**/
+ * Represents an affine transformation matrix, and provides tools for constructing and concatenating matrixes.
+ * @class Matrix2D
+ * @constructor
+ * @param {Number} a Specifies the a property for the new matrix.
+ * @param {Number} b Specifies the b property for the new matrix.
+ * @param {Number} c Specifies the c property for the new matrix.
+ * @param {Number} d Specifies the d property for the new matrix.
+ * @param {Number} tx Specifies the tx property for the new matrix.
+ * @param {Number} ty Specifies the ty property for the new matrix.
+ **/
 var Matrix2D = function(a, b, c, d, tx, ty) {
   this.initialize(a, b, c, d, tx, ty);
 }
 var p = Matrix2D.prototype;
 
 // static public properties:
-
 	/**
 	 * An identity matrix, representing a null transformation. Read-only.
 	 * @property identity
@@ -62,7 +61,6 @@ var p = Matrix2D.prototype;
 	 * @type Number
 	 **/
 	Matrix2D.DEG_TO_RAD = Math.PI/180;
-
 
 // public properties:
 	/**
@@ -139,7 +137,7 @@ var p = Matrix2D.prototype;
 	 * @method initialize
 	 * @protected
 	 * @return {Matrix2D} This matrix. Useful for chaining method calls.
-	*/
+	 **/
 	p.initialize = function(a, b, c, d, tx, ty) {
 		if (a != null) { this.a = a; }
 		this.b = b || 0;
@@ -341,7 +339,7 @@ var p = Matrix2D.prototype;
 	 * @param {Number} skewX The amount to skew horizontally in degrees.
 	 * @param {Number} skewY The amount to skew vertically in degrees.
 	 * @return {Matrix2D} This matrix. Useful for chaining method calls.
-	*/
+	 **/
 	p.skew = function(skewX, skewY) {
 		skewX = skewX*Matrix2D.DEG_TO_RAD;
 		skewY = skewY*Matrix2D.DEG_TO_RAD;
@@ -427,7 +425,7 @@ var p = Matrix2D.prototype;
 	 * @method decompose
 	 * @param {Object} target The object to apply the transform properties to. If null, then a new object will be returned.
 	 * @return {Matrix2D} This matrix. Useful for chaining method calls.
-	*/
+	 **/
 	p.decompose = function(target) {
 		// TODO: it would be nice to be able to solve for whether the matrix can be decomposed into only scale/rotation
 		// even when scale is negative
@@ -466,7 +464,7 @@ var p = Matrix2D.prototype;
 	 * @param {Shadow} shadow desired shadow value
 	 * @param {String} compositeOperation desired composite operation value
 	 * @return {Matrix2D} This matrix. Useful for chaining method calls.
-	*/
+	 **/
 	p.reinitialize = function(a,b,c,d,tx,ty,alpha,shadow,compositeOperation) {
 		this.initialize(a,b,c,d,tx,ty);
 		this.alpha = alpha || 1;
@@ -482,7 +480,7 @@ var p = Matrix2D.prototype;
 	 * @param {Shadow} shadow desired shadow value
 	 * @param {String} compositeOperation desired composite operation value
 	 * @return {Matrix2D} This matrix. Useful for chaining method calls.
-	*/
+	 **/
 	p.appendProperties = function(alpha, shadow, compositeOperation) {
 		this.alpha *= alpha;
 		this.shadow = shadow || this.shadow;
@@ -497,7 +495,7 @@ var p = Matrix2D.prototype;
 	 * @param {Shadow} shadow desired shadow value
 	 * @param {String} compositeOperation desired composite operation value
 	 * @return {Matrix2D} This matrix. Useful for chaining method calls.
-	*/
+	 **/
 	p.prependProperties = function(alpha, shadow, compositeOperation) {
 		this.alpha *= alpha;
 		this.shadow = this.shadow || shadow;

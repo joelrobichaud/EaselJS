@@ -83,13 +83,11 @@ var s = EventDispatcher;
 	 * @param {Event} event
 	 **/
 	p.dispatchEvent = function(event) {
-		var handlersForObserverForType = this._handlers[event.type];
+		var handlersForObserverForType = (this._handlers[event.type] || []).concat(this._handlers[Event.ALL] || []);
 
-		if (handlersForObserverForType) {
-			for (var j = 0; j < handlersForObserverForType.length; j++) {
-				event.target = this;
-				handlersForObserverForType[j].call(this, event);
-			}
+		for (var i = 0; i < handlersForObserverForType.length; i++) {
+			event.target = this;
+			handlersForObserverForType[i].call(this, event);
 		}
 	}
 
