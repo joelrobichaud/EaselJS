@@ -6,7 +6,7 @@
  * @extends EventDispatcher
  * @constructor
  * @param {Number} delay
- * @param {Integer} repeatCount
+ * @param {Number} repeatCount
  **/
 var Timer = function(delay, repeatCount) {
 	this.initialize(delay, repeatCount);
@@ -23,13 +23,13 @@ var s = Timer;
 
 	/**
 	 * @property repeatCount
-	 * @type Integer
+	 * @type Number
 	 **/
 	p.repeatCount = 0;
 
 	/**
 	 * @property currentCount
-	 * @type Integer
+	 * @type Number
 	 * @readOnly READ-ONLY
 	 * @default 0
 	 **/

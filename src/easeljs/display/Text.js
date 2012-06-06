@@ -220,7 +220,7 @@ var p = Text.prototype = new DisplayObject();
 
 	/**
 	 * @method getNumLines
-	 * @return {Integer}
+	 * @return {Number}
 	 **/
 	p.getNumLines = function() {
 		return (this.lineWidth ? Math.ceil(this.getMeasuredWidth() / this.lineWidth) : 1) + this.text.split('\n').length - 1;

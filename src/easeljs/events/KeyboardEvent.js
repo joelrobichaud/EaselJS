@@ -6,8 +6,8 @@
  * @extends NativeEvent
  * @constructor
  * @param {String} type
- * @param {Unsigned Integer} keyCode
- * @param {Unsigned Integer} charCode
+ * @param {Number} keyCode
+ * @param {Number} charCode
  * @param {Boolean} ctrlKey
  * @param {Boolean} altKey
  * @param {Boolean} shiftKey
@@ -22,13 +22,13 @@ var s = KeyboardEvent;
 // public properties:
 	/**
 	 * @property keyCode
-	 * @type {Unsigned Integer}
+	 * @type {Number}
 	 **/
 	p.keyCode = 0;
 
 	/**
 	 * @property charCode
-	 * @type {Unsigned Integer}
+	 * @type {Number}
 	 **/
 	p.charCode = 0;
 

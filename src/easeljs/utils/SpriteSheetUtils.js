@@ -114,7 +114,7 @@ var SpriteSheetUtils = function() {
 	 * @method _flip
 	 * @static
 	 * @param {Image} spriteSheet The SpriteSheet instance to extract a frame from.
-	 * @param {Integer} count
+	 * @param {Number} count
 	 * @param {Number} h
 	 * @param {Number} v
 	 **/
