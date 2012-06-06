@@ -1,6 +1,7 @@
 (function(window) {
 
 /**
+ * The base class of all events. This is the class you want to extend in order to create your own custom events.
  * @class Event
  * @constructor
  * @param {String} type
@@ -14,14 +15,12 @@ var s = Event;
 // public properties:
 	/**
 	 * @property target
-	 * @readonly
 	 * @type Object
 	 **/
 	p.target = null;
 
 	/**
 	 * @property type
-	 * @readonly
 	 * @type String
 	 **/
 	p.type = null;

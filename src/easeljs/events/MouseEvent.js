@@ -29,7 +29,7 @@
 (function(window) {
 
 /**
-* This is passed as the parameter to onPress, onMouseMove, onMouseUp, onMouseDown, onMouseOver, onMouseOut and onClick
+* MouseEvent is the event type that is passed down to event handlers for mouseDown, mouseMove, mouseUp, click, rollOver and rollOut event types.
 * handlers on DisplayObject instances.
 * @class MouseEvent
 * @constructor

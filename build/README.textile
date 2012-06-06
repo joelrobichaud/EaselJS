@@ -1,18 +1,11 @@
 For building the compiled library and API documentation, we use a custom build script written in node.js. It uses the following libraries:
 
 * "Google Closure compiler":http://code.google.com/closure/compiler/docs/gettingstarted_app.html
-* "YUI Doc":http://developer.yahoo.com/yui/yuidoc/
+* "YUI Doc":http://yui.github.com/yuidoc/
 
 Google Closure requires that Java is installed on the system.
 
-YUI Doc requires that Python is installed on your system, along with the following modules:
-
-* setuptools
-* Pygments
-* SimpleJSON
-* Cheetah
-
-View the "YUI Doc":http://developer.yahoo.com/yui/yuidoc/ page for more information.
+YUI Doc requires that Nodejs is installed on your system.
 
 YUI Doc and Google Closure are included in the repository, which makes it easier to run the build, and ensures that we don't have version mismatches between the source and the libraries.
 

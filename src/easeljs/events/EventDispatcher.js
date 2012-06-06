@@ -1,6 +1,8 @@
 (function(window) {
 
 /**
+ * EventDispatcher is an abstract class that should not be constructed directly. Instead you should subclass it
+ * in order to listen and disptach to your custom events.
  * @class EventDispatcher
  * @constructor
  **/

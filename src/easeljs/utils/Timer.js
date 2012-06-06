@@ -1,6 +1,7 @@
 (function(window) {
 
 /**
+ * The Timer class provides an easy to use interface to keep track of time.
  * @class Timer
  * @extends EventDispatcher
  * @constructor
@@ -28,15 +29,17 @@ var s = Timer;
 
 	/**
 	 * @property currentCount
-	 * @readonly
 	 * @type Integer
+	 * @readOnly READ-ONLY
+	 * @default 0
 	 **/
 	p.currentCount = 0;
 
 	/**
 	 * @property running
-	 * @readonly
 	 * @type Boolean
+	 * @readOnly READ-ONLY
+	 * @default false
 	 **/
 	p.running = false;
 

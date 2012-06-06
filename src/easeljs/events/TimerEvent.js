@@ -1,6 +1,7 @@
 (function(window) {
 
 /**
+ * TimerEvent is the event type that is passed down to event handlers for timer and timerComplete event types.
  * @class TimerEvent
  * @extends Event
  * @constructor

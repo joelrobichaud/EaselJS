@@ -41,45 +41,32 @@ var SOURCE_FILES = [
 // default name for lib output:
 var JS_FILE_NAME = "easeljs-%VERSION%.min.js";
 
-// project name:
-var PROJECT_NAME = "EaselJS";
+// Yui Doc config file name
+var CONFIG_FILE_NAME = "yuidoc-config.json";
 
-// url for website or github repo for project:
-var PROJECT_URL = "http://createjs.com/";
-
-
-// name of directory for docs:
-var DOCS_DIR_NAME = PROJECT_NAME+"_docs-%VERSION%";
-
-// name of file for zipped docs:
-var DOCS_FILE_NAME = DOCS_DIR_NAME+".zip";
 
 // name of directory where generated files are placed
 var OUTPUT_DIR_NAME = "output";
+
+// name of directory for docs:
+var DOCS_DIR_NAME = OUTPUT_DIR_NAME+"/EaselJS_docs-%VERSION%";
+
+// name of file for zipped docs:
+var DOCS_FILE_NAME = DOCS_DIR_NAME+".zip";
 
 
 // path to directory that includes YUI Doc templates
 var TEMPLATE_DIR_PATH = "template";
 
-// tmp directory used when running scripts:
-var TMP_DIR_NAME = "tmp";
-
 // paths to tools:
 var GOOGLE_CLOSURE_PATH = "../tools/google-closure/compiler.jar";
-var YUI_DOC_PATH = "../tools/yuidoc/bin/yuidoc.py";
-
-// yui version being used
-var YUI_VERSION = 2;
-
+var YUI_DOC_PATH = "../tools/yuidocjs/lib/cli.js";
 
 /*
 END CONFIGURATION
 ************************************************************/
 
-
 // TODO: add support for recursively checking to see if we are ommiting any files
-
-
 var FILE = require("fs");
 var PATH = require("path");
 var CHILD_PROCESS = require("child_process");
@@ -109,7 +96,7 @@ OPTIMIST.describe("v", "Enable verbose output")
 	.describe("o", "Name of minified JavaScript file.")
 	.alias("o", "output")
 	.default("o", JS_FILE_NAME)
-	.usage("Build Task Manager for "+PROJECT_NAME+"\nUsage\n$0 [-v] [-h] [-l] --tasks=TASK [--version=DOC_VERSION] [--source=FILE] [--output=FILENAME.js]");
+	.usage("Build Task Manager for EaselJS\nUsage\n$0 [-v] [-h] [-l] --tasks=TASK [--version=DOC_VERSION] [--source=FILE] [--output=FILENAME.js]");
 
 
 
@@ -226,11 +213,6 @@ function main(argv)
 
 function cleanTask(completeHandler)
 {
-	if(PATH.existsSync(TMP_DIR_NAME))
-	{	
-		WRENCH.rmdirSyncRecursive(TMP_DIR_NAME);
-	}
-	
 	if(PATH.existsSync(OUTPUT_DIR_NAME))
 	{
 		WRENCH.rmdirSyncRecursive(OUTPUT_DIR_NAME);
@@ -315,24 +297,17 @@ function buildSourceTask(completeHandler)
 function buildDocsTask(version, completeHandler)
 {	
 	var parser_in="../src";
-	var	parser_out= PATH.join(TMP_DIR_NAME , "parser");
 
 	var doc_dir=DOCS_DIR_NAME.split("%VERSION%").join(version);
 	var doc_file=DOCS_FILE_NAME.split("%VERSION%").join(version);
 	
-	var generator_out=PATH.join(OUTPUT_DIR_NAME, doc_dir);
-	
 	var cmd = [
-		"python", YUI_DOC_PATH,
-		parser_in,
-		"-p", parser_out,
-		"-o", generator_out,
-		"-t", TEMPLATE_DIR_PATH,
-		"-v", version,
-		"-Y", YUI_VERSION,
-		"-m", PROJECT_NAME,
-		"-u", PROJECT_URL
+		"node", YUI_DOC_PATH, parser_in,
+		"--configfile", CONFIG_FILE_NAME,
+		"--project-version", version,
+		"-o", doc_dir
 	];
+	print(cmd.join(" "));
 	
 	CHILD_PROCESS.exec(
 		cmd.join(" "),
@@ -356,9 +331,9 @@ function buildDocsTask(version, completeHandler)
 				print("Error Running YUI DOC : " + error);
 				exitWithFailure();
 		    }
-		
+			
 			CHILD_PROCESS.exec(
-				"cd " + OUTPUT_DIR_NAME + ";zip -r " + doc_file + " " + doc_dir + " -x *.DS_Store",
+				"zip -r " + doc_file + " " + doc_dir + " -x *.DS_Store",
 				function(error, stdout, stderr)
 				{
 					if(verbose)
@@ -379,13 +354,9 @@ function buildDocsTask(version, completeHandler)
 						print("Error ZIPPING Docs : " + error);
 						exitWithFailure();
 				    }
-				
-					WRENCH.rmdirSyncRecursive(TMP_DIR_NAME);
-				
+					
 					completeHandler(true);				
-				});		
-		
-		
+				});
 		});	
 }
 

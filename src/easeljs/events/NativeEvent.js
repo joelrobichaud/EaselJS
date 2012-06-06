@@ -1,6 +1,7 @@
 (function(window) {
 
 /**
+ * NativeEvent specifies an event type which has a corresponding DOM alternative. This mostly concerns MouseEvent and KeyboardEvent.
  * @class NativeEvent
  * @extends Event
  * @constructor

@@ -1,6 +1,7 @@
 (function(window) {
 
 /**
+ * KeyboardEvent is the event type that is passed down to event handlers for keyUp and keyDown event types.
  * @class KeyboardEvent
  * @extends NativeEvent
  * @constructor
