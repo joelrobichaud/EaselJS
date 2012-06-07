@@ -87,8 +87,5 @@
   "_npmVersion": "1.1.21",
   "_nodeVersion": "v0.6.18",
   "_defaultsLoaded": true,
-  "dist": {
-    "shasum": "2bd44937e258785ba3b6faa57eed7a7de6749334"
-  },
   "_from": "yuidocjs"
 }

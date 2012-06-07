@@ -1,0 +1,9 @@
+{
+    "name": "EaselJS",
+    "description": "The EaselJS Javascript library provides a retained graphics mode for canvas including a full, hierarchical display list, a core interaction model, and helper classes to make working with 2D graphics in Canvas much easier.",
+    "url": "http://createjs.com/",
+    "logo": "http://createjs.com/Docs/EaselJS/assets/logo.png",
+    "options": {
+    	"linkNatives": "true"
+    }
+}
