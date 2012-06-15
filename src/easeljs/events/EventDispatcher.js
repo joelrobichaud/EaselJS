@@ -35,12 +35,15 @@ var s = EventDispatcher;
 	 * @method addEventListener
 	 * @param {String} type
 	 * @param {Function} handler
+	 * @param {Object} context
 	 **/
-	p.addEventListener = function(type, handler) {
+	p.addEventListener = function(type, handler, context) {
+		var handlerObject = { "handler": handler, "context": context };
+
 		if (this.hasEventListener(type)) {
-			this._handlers[type].push(handler);
+			this._handlers[type].push(handlerObject);
 		} else {
-			this._handlers[type] = [handler];
+			this._handlers[type] = [handlerObject];
 		}
 	}
 
@@ -50,13 +53,17 @@ var s = EventDispatcher;
 	 * @param {Function} handler
 	 **/
 	p.removeEventListener = function(type, handler) {
-		var index = this._handlers[type].indexOf(handler);
-		if (index !== -1) {
-			this._handlers[type].splice(index, 1);
+		var handlerObjectsForType = this._handlers[type];
+
+		if (handlerObjectsForType.length === 0) {
+			delete handlerObjectsForType;
+			return;
 		}
 
-		if (this._handlers[type].length === 0) {
-			delete this._handlers[type];
+		for (var i = 0; i < handlerObjectsForType.length; i++) {
+			if (handlerObjectsForType[i].handler === handler) {
+				handlerObjectsForType.splice(i, 1);
+			}
 		}
 	}
 
@@ -85,11 +92,11 @@ var s = EventDispatcher;
 	 * @param {Event} event
 	 **/
 	p.dispatchEvent = function(event) {
-		var handlersForObserverForType = (this._handlers[event.type] || []).concat(this._handlers[Event.ALL] || []);
+		var handlerObjectsForType = (this._handlers[event.type] || []).concat(this._handlers[Event.ALL] || []);
 
-		for (var i = 0; i < handlersForObserverForType.length; i++) {
+		for (var i = 0; i < handlerObjectsForType.length; i++) {
 			event.target = this;
-			handlersForObserverForType[i].call(this, event);
+			handlerObjectsForType[i].handler.call(handlerObjectsForType[i].context || null, event);
 		}
 	}
 

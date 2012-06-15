@@ -46,6 +46,20 @@ var s = Event;
 	 **/
 	s.REMOVED_FROM_STAGE = "removedFromStage";
 
+	/**
+	 * @property ENTER_FRAME
+	 * @static
+	 * @type String
+	 **/
+	s.ENTER_FRAME = "enterFrame";
+
+	/**
+	 * @property EXIT_FRAME
+	 * @static
+	 * @type String
+	 **/
+	s.EXIT_FRAME = "exitFrame";
+
 // constructor:
 	/**
 	 * @property EventDispatcher_initialize

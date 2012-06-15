@@ -192,12 +192,14 @@ var p = Stage.prototype = new Container();
 	 **/
 	p.update = function(data) {
 		if (!this.canvas) { return; }
+		if (this.hasEventListener(Event.ENTER_FRAME)) { this.dispatchEvent(new Event(Event.ENTER_FRAME)); }
 		if (this.autoClear) { this.clear(); }
 		Stage._snapToPixelEnabled = this.snapToPixelEnabled;
 		if (this.tickOnUpdate) {
 			this._tick(data);
 		}
 		this.draw(this.canvas.getContext("2d"), false, this.getConcatenatedMatrix(this._matrix));
+		if (this.hasEventListener(Event.EXIT_FRAME)) { this.dispatchEvent(new Event(Event.EXIT_FRAME)); }
 	}
 
 	/**

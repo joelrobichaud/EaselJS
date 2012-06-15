@@ -121,9 +121,9 @@ var s = Timer;
 			if (this.currentCount === this.repeatCount && this.repeatCount !== 0) {
 				this.stop();
 				this.dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
-			} else {
-				this.dispatchEvent(new TimerEvent(TimerEvent.TIMER));
 			}
+			
+			this.dispatchEvent(new TimerEvent(TimerEvent.TIMER));
 		}
 	}
 

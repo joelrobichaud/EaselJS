@@ -15,14 +15,14 @@ var s = TimerEvent;
 
 // public properties:
 	/**
-	 * @property KEY_DOWN
+	 * @property TIMER
 	 * @static
 	 * @type String
 	 **/
 	s.TIMER = "timer";
 
 	/**
-	 * @property KEY_UP
+	 * @property TIMER_COMPLETE
 	 * @static
 	 * @type String
 	 **/
