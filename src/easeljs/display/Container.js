@@ -527,11 +527,11 @@ var p = Container.prototype = new DisplayObject();
 	}
 
 	/**
-	 * @method _getDimensions
+	 * @method _measureDimensions
 	 * @protected
 	 * @return {Point}
 	 **/
-	Container.prototype._getDimensions = function(raw) {
+	Container.prototype._measureDimensions = function(raw) {
 		var l = this.children.length;
 		if (l === 0) return new Point();
 		
@@ -543,7 +543,7 @@ var p = Container.prototype = new DisplayObject();
 		}
 		return new Point(dimensions.width, dimensions.height);
 	}
-
+	
 	/**
 	 * @method _expandDimensionsFromObject
 	 * @protected
@@ -572,7 +572,7 @@ var p = Container.prototype = new DisplayObject();
 					posY += objectDimensions.height;
 			}
 		}
-		
+
 		// Expand width
 		isLeft = posX < dimensions.x;
 		isWider = posX + objectDimensions.width > dimensions.x + dimensions.width;

@@ -334,11 +334,11 @@ var p = Text.prototype = new DisplayObject();
 	}
 
 	/**
-	 * @method _getDimensions
+	 * @method _measureDimensions
 	 * @protected
 	 * @return {Point}
 	 **/
-	p._getDimensions = function() {
+	p._measureDimensions = function() {
 		return new Point(
 			this.maxWidth || this.lineWidth || this.getMeasuredWidth(),
 			this.getNumLines() * (this.lineHeight || this.getMeasuredLineHeight())

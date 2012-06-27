@@ -124,15 +124,16 @@ var p = Shape.prototype = new DisplayObject();
 	p.toString = function() {
 		return "[Shape (name="+  this.name +")]";
 	}
-
+	
 // private methods :
 	/**
-	 * @method _getDimensions
+	 * @method _measureDimensions
 	 * @protected
 	 * @return {Point}
 	 **/
-	p._getDimensions = function() {
-		return new Point(this.graphics.getWidth(), this.graphics.getHeight());
+	p._measureDimensions = function() {
+		var bounds = this.graphics.getBounds();
+		return new Point(bounds.width, bounds.height);
 	}
 
 window.Shape = Shape;

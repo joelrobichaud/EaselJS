@@ -642,7 +642,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Number}
 	 **/
 	p.getWidth = function() {
-		var mtx = new Matrix2D(), dimensions = this._getDimensions();
+		if (this.nominalBounds) { return this.nominalBounds.width; }
+		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return Math.abs(dimensions.x * mtx.a + dimensions.y * mtx.b);
 	}
@@ -652,7 +653,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 ** @return {Number}
 	 */
 	p.getHeight = function() {
-		var mtx = new Matrix2D(), dimensions = this._getDimensions();
+		if (this.nominalBounds) { return this.nominalBounds.height; }
+		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return Math.abs(dimensions.x * mtx.c + dimensions.y * mtx.d);
 	}
@@ -662,7 +664,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Object}
 	 **/
 	p.getSize = function() {
-		var mtx = new Matrix2D(), dimensions = this._getDimensions();
+		if (this.nominalBounds) { return { width: this.nominalBounds.width, height: this.nominalBounds.height }; }
+		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return {
 			width: Math.abs(dimensions.x * mtx.a + dimensions.y * mtx.b),
@@ -675,7 +678,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Number}
 	 **/
 	p.getRawWidth = function() {
-		return this._getDimensions(true).x;
+		return this._measureDimensions(true).x;
 	}
 
 	/**
@@ -683,7 +686,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Number}
 	 **/
 	p.getRawHeight = function() {
-		return this._getDimensions(true).y;
+		return this._measureDimensions(true).y;
 	}
 
 	/**
@@ -691,10 +694,10 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Object}
 	 **/
 	p.getRawSize = function() {
-		var dimensions = this._getDimensions(true);
+		var dimensions = this._measureDimensions(true);
 		return { width: dimensions.x, height: dimensions.y };
 	}
-
+	
 	/**
 	 * Tests whether the display object intersects the specified local point (ie. draws a pixel with alpha > 0 at
 	 * the specified position). This ignores the alpha, shadow and compositeOperation of the display object, and all
@@ -946,11 +949,11 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	}
 
 	/**
-	 * @method _getDimensions
+	 * @method _measureDimensions
 	 * @protected
 	 * @return {Point}
 	 **/
-	p._getDimensions = function() {
+	p._measureDimensions = function() {
 		return new Point();
 	}
 

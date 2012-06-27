@@ -240,6 +240,27 @@ var p = Graphics.prototype;
 	p._activeInstructions = null;
 	
 	/**
+	 * @property _drawnShapes
+	 * @protected
+	 * @type Array[Rectangle]
+	 **/
+	p._drawnShapes = null;
+
+	/**
+	 * @property _drawingPosition
+	 * @protected
+	 * @type Point
+	 **/
+	p._drawingPosition = null;
+
+	/**
+	 * @property _initialDrawingPosition
+	 * @protected
+	 * @type Point
+	 */
+	p._initialDrawingPosition = null;
+
+	/**
 	 * @property _active
 	 * @protected
 	 * @type Boolean
@@ -254,20 +275,6 @@ var p = Graphics.prototype;
 	 * @default false
 	 **/
 	p._dirty = false;
-
-	/**
-	 * @property _width
-	 * @protected
-	 * @type Number
-	 */
-	p._width = 0;
-
-	/**
-	 * @property _height
-	 * @protected
-	 * @type Number
-	 */
-	p._height = 0;
 	
 // constructor:
 	/** 
@@ -321,6 +328,7 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.moveTo = function(x, y) {
+		this._setDrawingPosition(x, y);
 		this._activeInstructions.push(new Command(this._ctx.moveTo, [x, y]));
 		return this;
 	}
@@ -336,6 +344,14 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.lineTo = function(x, y) {
+		if (this._drawingPosition != null) {
+			var cx = this._drawingPosition.x, cy = this._drawingPosition.y, minX = Math.min(cx, x), minY = Math.min(cy, y),
+				maxX = Math.max(cx, x), maxY = Math.max(cy, y);
+
+			this._drawnShapes.push(new Rectangle(minX, minY, maxX - minX, maxY - minY));
+		}
+		this._setDrawingPosition(x, y);
+
 		this._dirty = this._active = true;
 		this._activeInstructions.push(new Command(this._ctx.lineTo, [x, y]));
 		return this;
@@ -374,8 +390,24 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.arc = function(x, y, radius, startAngle, endAngle, anticlockwise) {
-		this._dirty = this._active = true;
 		if (anticlockwise == null) { anticlockwise = false; }
+
+		var p1 = new Point(x + radius * Math.cos(startAngle), y + radius * Math.sin(startAngle)),
+			p2 = new Point(x + radius * Math.cos(endAngle), y + radius * Math.sin(endAngle));
+		if (anticlockwise) { var temp = p2; p2 = p1; p1 = temp; }	
+
+		var minX = Math.min(p1.x, p2.x), minY = Math.min(p1.y, p2.y), maxX = Math.max(p1.x, p2.x), maxY = Math.max(p1.y, p2.y),
+			w = maxX - minX, h = maxY - minY, rw = Math.round(w), rh = Math.round(h), ox = oy = 0;
+
+		// Full circles and half circles
+		if (rw == 0 && rh == 0) { w = h = 2*radius; minX -= 2*radius; minY -= radius; }
+		else if (rw == 0) { w = radius; }
+		else if (rh == 0) { h = radius; }
+
+		this._drawnShapes.push(new Rectangle(minX, minY, w, h));
+		this._setDrawingPosition(p2.x, p2.y);
+		
+		this._dirty = this._active = true;
 		this._activeInstructions.push(new Command(this._ctx.arc, [x, y, radius, startAngle, endAngle, anticlockwise]));
 		return this;
 	}
@@ -392,6 +424,32 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.quadraticCurveTo = function(cpx, cpy, x, y) {
+		if (this._drawingPosition != null) {
+			var cx = this._drawingPosition.x, cy = this._drawingPosition.y, ext = [new Point(cx, cy), new Point(x, y)],
+				f = this._computeBezierCubicBaseValue, d = this._computeBezierQuadraticDerivative;
+
+			// Finding the derivative's maximum/minimum for each axis
+			var t = [d(cx, cpx, x), d(cy, cpy, y)];
+
+			// Finding the point on the original function; Bezier curves only use [0, 1]
+			for (var i = 0; i < t.length; i++) {
+				if (isFinite(t[i]) && t[i] >= 0 && t[i] <= 1) {
+					ext.push(new Point(f(t[i], cx, cpx, x), f(t[i], cy, cpy, y)));
+				}
+			}
+
+			// Finding the bounds of the curve which correspond to the maximum and minimum values of the critical points for each axis
+			var minX = maxX = ext[0].x, minY = maxY = ext[0].y;
+			for (var i = 1; i < ext.length; i++) {
+				if (ext[i].x > maxX) { maxX = ext[i].x; }
+				if (ext[i].y > maxY) { maxY = ext[i].y; }
+				if (ext[i].x < minX) { minX = ext[i].x; }
+				if (ext[i].y < minY) { minY = ext[i].y; }
+			}
+			this._drawnShapes.push(new Rectangle(minX, minY, maxX - minX, maxY - minY));
+		}
+		this._setDrawingPosition(x, y);
+
 		this._dirty = this._active = true;
 		this._activeInstructions.push(new Command(this._ctx.quadraticCurveTo, [cpx, cpy, x, y]));
 		return this;
@@ -412,6 +470,32 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.bezierCurveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) {
+		if (this._drawingPosition != null) {
+			var cx = this._drawingPosition.x, cy = this._drawingPosition.y, ext = [new Point(cx, cy), new Point(x, y)],
+				f = this._computeBezierCubicBaseValue, d = this._computeBezierCubicDerivative;
+			
+			// Finding the derivative's maximum/minimum for each axis
+			var t = d(cx, cp1x, cp2x, x).concat(d(cy, cp1y, cp2y, y));
+
+			// Finding the point on the original function; Bezier curves only use [0, 1]
+			for (var i = 0; i < t.length; i++) {
+				if (isFinite(t[i]) && t[i] >= 0 && t[i] <= 1) {
+					ext.push(new Point(f(t[i], cx, cp1x, cp2x, x), f(t[i], cy, cp1y, cp2y, y)));
+				}
+			}
+
+			// Finding the bounds of the curve which correspond to the maximum and minimum values of the critical points for each axis
+			var minX = maxX = ext[0].x, minY = maxY = ext[0].y;
+			for (var i = 1; i < ext.length; i++) {
+				if (ext[i].x > maxX) { maxX = ext[i].x; }
+				if (ext[i].y > maxY) { maxY = ext[i].y; }
+				if (ext[i].x < minX) { minX = ext[i].x; }
+				if (ext[i].y < minY) { minY = ext[i].y; }
+			}
+			this._drawnShapes.push(new Rectangle(minX, minY, maxX - minX, maxY - minY));
+		}
+		this._setDrawingPosition(x, y);
+
 		this._dirty = this._active = true;
 		this._activeInstructions.push(new Command(this._ctx.bezierCurveTo, [cp1x, cp1y, cp2x, cp2y, x, y]));
 		return this;
@@ -430,6 +514,9 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.rect = function(x, y, w, h) {
+		this._drawnShapes.push(new Rectangle(x, y, w, h));
+		this._setDrawingPosition(x, y);
+
 		this._dirty = this._active = true;
 		this._activeInstructions.push(new Command(this._ctx.rect, [x, y, w, h]));
 		return this;
@@ -444,6 +531,7 @@ var p = Graphics.prototype;
 	p.closePath = function() {
 		if (this._active) {
 			this._dirty = true;
+			this._setDrawingPosition(this._initialDrawingPosition.x, this._initialDrawingPosition.y);
 			this._activeInstructions.push(new Command(this._ctx.closePath, []));
 		}
 		return this;
@@ -456,10 +544,11 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.clear = function() {
+		this._drawnShapes = [];
 		this._instructions = [];
 		this._oldInstructions = [];
 		this._activeInstructions = [];
-		this._strokeStyleInstructions = this._strokeInstructions = this._fillInstructions = null;
+		this._strokeStyleInstructions = this._strokeInstructions = this._fillInstructions = this._drawingPosition = this._initialDrawingPosition = null;
 		this._active = this._dirty = false;
 		return this;
 	}
@@ -700,9 +789,11 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.drawRoundRectComplex = function(x, y, w, h, radiusTL, radiusTR, radiusBR, radiusBL) {
+		this._drawnShapes.push(new Rectangle(x, y, w, h));
+		this._setDrawingPosition(x + radiusTL, y);
+
+		var pi = Math.PI, arc=this._ctx.arc, lineTo=this._ctx.lineTo;		
 		this._dirty = this._active = true;
-		var pi = Math.PI, arc=this._ctx.arc, lineTo=this._ctx.lineTo;
-		
 		this._activeInstructions.push(
 			new Command(this._ctx.moveTo, [x+radiusTL, y]),
 			new Command(lineTo, [x+w-radiusTR, y]),
@@ -761,7 +852,9 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.drawEllipse = function(x, y, w, h) {
-		this._dirty = this._active = true;
+		this._drawnShapes.push(new Rectangle(x, y, w, h));
+		this._setDrawingPosition(x, y + h/2);
+		
 		var k = 0.5522848;
 		var ox = (w / 2) * k;
 		var oy = (h / 2) * k;
@@ -770,6 +863,7 @@ var p = Graphics.prototype;
 		var xm = x + w / 2;
 		var ym = y + h / 2;
 			
+		this._dirty = this._active = true;
 		this._activeInstructions.push(
 			new Command(this._ctx.moveTo, [x, ym]),
 			new Command(this._ctx.bezierCurveTo, [x, ym-oy, xm-ox, y, xm, y]),
@@ -796,13 +890,17 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.drawPolyStar = function(x, y, radius, sides, pointSize, angle) {
-		this._dirty = this._active = true;
 		if (pointSize == null) { pointSize = 0; }
 		pointSize = 1-pointSize;
+
 		if (angle == null) { angle = 0; }
 		else { angle /= 180/Math.PI; }
-		var a = Math.PI/sides;
+
+		this._drawnShapes.push(new Rectangle(x - radius, y - radius, radius * 2, radius * 2));
+		this._setDrawingPosition(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
 		
+		var a = Math.PI/sides;
+		this._dirty = this._active = true;
 		this._activeInstructions.push(new Command(this._ctx.moveTo, [x+Math.cos(angle)*radius, y+Math.sin(angle)*radius]));
 		for (var i=0; i<sides; i++) {
 			angle += a;
@@ -877,32 +975,48 @@ var p = Graphics.prototype;
 		}
 		return this;
 	}
-	
-	/**
-	 * @method setWidth
-	 * @param {Number} value
-	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
-	 **/
-	p.setWidth = function(value) { this._width = value; return this; }
 
 	/**
-	 * @method setHeight
-	 * @param {Number} value
-	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
-	 **/
-	p.setHeight = function(value) { this._height = value; return this; }
+	 * @method getBounds
+	 * @return {Rectangle}
+	 */
+	p.getBounds = function() {
+		var l = this._drawnShapes.length;
+		if (l === 0) { return new Rectangle(); }
 
-	/**
-	 * @method getWidth
-	 * @return {Number}
-	 **/
-	p.getWidth = function(value) { return this._width; }
+		var graphics = this._drawnShapes, bounds = new Rectangle();
+		for (var i = 0; i < l; i++) {
+			var isLeft = graphics[i].x < bounds.x;
+			var isWider = graphics[i].x + graphics[i].width > bounds.x + bounds.width;
+			
+			if (isLeft && isWider) {
+				bounds.width += graphics[i].x + graphics[i].width - (bounds.x + bounds.width);
+				bounds.width += bounds.x - graphics[i].x;
+				bounds.x = graphics[i].x;
+			} else if (isLeft) {
+				bounds.width += bounds.x - graphics[i].x;
+				bounds.x = graphics[i].x;
+			} else if (isWider) {
+				bounds.width += graphics[i].x + graphics[i].width - (bounds.x + bounds.width);
+			}
 
-	/**
-	 * @method getHeight
-	 * @return {Number}
-	 **/
-	p.getHeight = function(value) { return this._height; }
+			var isAbove = graphics[i].y < bounds.y;
+			var isTaller = graphics[i].y + graphics[i].height > bounds.y + bounds.height;
+
+			if (isAbove && isTaller) {
+				bounds.height += graphics[i].y + graphics[i].height - (bounds.y + bounds.height);
+				bounds.height += bounds.y - graphics[i].y;
+				bounds.y = graphics[i].y;
+			} else if (isAbove) {
+				bounds.height += bounds.y - graphics[i].y;
+				bounds.y = graphics[i].y;
+			} else if (isTaller) {
+				bounds.height += graphics[i].y + graphics[i].height - (bounds.y + bounds.height);
+			}
+		}
+		this._drawnShapes = [bounds];
+		return this._drawnShapes[0];
+	}
 	
 	/**
 	 * Returns a clone of this Graphics instance.
@@ -1155,6 +1269,73 @@ var p = Graphics.prototype;
 		this._oldInstructions = this._instructions;
 		this._activeInstructions = [];
 		this._active = this._dirty = false;
+		this._initialDrawingPosition = null;
+	}
+
+	/**
+	 * @method _setDrawingPosition
+	 * @protected
+	 * @param {Number} x
+	 * @param {Number} y
+	 **/
+	p._setDrawingPosition = function(x, y) {
+		if (this._initialDrawingPosition == null) { this._initialDrawingPosition = new Point(x, y); }
+		this._drawingPosition = new Point(x, y);
+	}
+
+	/**
+	 * @method _computeBezierQuadraticBaseValue
+	 * @protected
+	 * @param {Number} t
+	 * @param {Number} a
+	 * @param {Number} b
+	 * @param {Number} c
+	 * @return {Number}
+	 **/
+	p._computeBezierQuadraticBaseValue = function(t, a, b, c) {
+		var mt = 1-t;
+		return a*mt*mt + 2*t*b*mt + c*t*t;
+	}
+
+	/**
+	 * @method _computeBezierQuadraticDerivative
+	 * @protected
+	 * @param {Number} a
+	 * @param {Number} b
+	 * @param {Number} c
+	 * @return {Number}
+	 **/
+	p._computeBezierQuadraticDerivative = function(a, b, c) {
+		return (a-b)/(a-2*b+c);
+	}
+
+	/**
+	 * @method _computeBezierCubicBaseValue
+	 * @protected
+	 * @param {Number} t
+	 * @param {Number} a
+	 * @param {Number} b
+	 * @param {Number} c
+	 * @param {Number} d
+	 * @return {Number}
+	 **/
+	p._computeBezierCubicBaseValue = function(t, a, b, c, d) {
+		var mt = 1-t;
+		return a*mt*mt*mt + 3*t*b*mt*mt + 3*mt*c*t*t + d*t*t*t;
+	}
+
+	/**
+	 * @method _computeBezierCubicDerivative
+	 * @protected
+	 * @param {Number} a
+	 * @param {Number} b
+	 * @param {Number} c
+	 * @param {Number} d
+	 * @return {Number}
+	 **/
+	p._computeBezierCubicDerivative = function(a, b, c, d) {
+		var tl = -a+2*b-c, tr = Math.sqrt(-a*(c-d) + b*b - b*(c+d) + c*c), dn = -a+3*b-3*c+d;
+		return [(tl+tr)/dn, (tl-tr)/dn];
 	}
 	
 	// used to create Commands that set properties:

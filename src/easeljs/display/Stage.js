@@ -319,11 +319,11 @@ var p = Stage.prototype = new Container();
 
 // private methods:
 	/**
-	 * @method _getDimensions
+	 * @method _measureDimensions
 	 * @protected
 	 * @return {Point}
 	 **/
-	p._getDimensions = function() {
+	p._measureDimensions = function() {
 		return new Point(this.canvas.width, this.canvas.height);
 	}
 	
@@ -454,7 +454,7 @@ var p = Stage.prototype = new Container();
 		}
 
 		var target = this._getObjectsUnderPoint(this.mouseX, this.mouseY, null, (this._mouseOverIntervalID ? 3 : 1));
-		if (target) {
+		if (target && target !== this) {
 			if (target.hasEventListener(MouseEvent.MOUSE_DOWN)) {
 				target.dispatchEvent(evt);
 				this._activeMouseEvent = evt;

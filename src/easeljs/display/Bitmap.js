@@ -170,13 +170,14 @@ var p = Bitmap.prototype = new DisplayObject();
 
 // private methods:
 	/**
-	 * @method _getDimensions
+	 * @method _measureDimensions
 	 * @protected
 	 * @return {Point}
 	 **/
-	p._getDimensions = function() {
-		var dimensions, image = this.image;
+	p._measureDimensions = function() {
+		var dimensions, image = this.image, sourceRect = this.sourceRect;
 		if (!image) return new Point();
+		if (sourceRect) { return new Point(sourceRect.width, sourceRect.height); }
 
 		if (image instanceof HTMLImageElement) {
 			dimensions = new Point(image.naturalWidth, image.naturalHeight);

@@ -368,11 +368,11 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 	}
 
 	/**
-	 * @method _getDimensions
+	 * @method _measureDimensions
 	 * @protected
 	 * @return {Point}
 	 **/
-	BitmapAnimation.prototype._getDimensions = function() {
+	BitmapAnimation.prototype._measureDimensions = function() {
 		return new Point(this.spriteSheet._frameWidth, this.spriteSheet._frameHeight);
 	}
 
