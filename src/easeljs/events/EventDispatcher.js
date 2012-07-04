@@ -102,7 +102,7 @@ var s = EventDispatcher;
 
 		for (var i = 0; i < handlerObjectsForType.length; i++) {
 			event.target = this;
-			handlerObjectsForType[i].handler.call(handlerObjectsForType[i].context || event.target, event);
+			handlerObjectsForType[i].handler.call(handlerObjectsForType[i].context, event);
 		}
 	}
 	
