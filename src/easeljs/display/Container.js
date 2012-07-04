@@ -233,6 +233,7 @@ var p = Container.prototype = new DisplayObject();
 				if (child instanceof Container) { child.dispatchEventToChildren(evt); }
 				child.dispatchEvent(evt);
 			}
+			if (child instanceof DOMElement) { child._style.visibility = "hidden"; }
 			child.parent = null;
 		}
 		this.children.splice(index, 1);
@@ -504,23 +505,31 @@ var p = Container.prototype = new DisplayObject();
 									|| (mouseEvents&2 && (child.hasEventListener(MouseEvent.ROLL_OVER)
 									|| child.hasEventListener(MouseEvent.ROLL_OUT)))) {
 
-				var hitArea = child.hitArea;
-				child.getConcatenatedMatrix(mtx);
-				
-				if (hitArea) {
-					mtx.appendTransform(hitArea.x+child.regX, hitArea.y+child.regY, hitArea.scaleX, hitArea.scaleY, hitArea.rotation, hitArea.skewX, hitArea.skewY, hitArea.regX, hitArea.regY);
-					mtx.alpha *= hitArea.alpha/child.alpha;
+				if (child instanceof DOMElement) {
+					if (x >= child.x && x <= child.x + child.getWidth() && y >= child.y && y <= child.y + child.getHeight()) {
+						if (hasHandler) { return this; }
+						if (arr) { arr.push(child); }
+						else { return child; }
+					}
+				} else {
+					var hitArea = child.hitArea;
+					child.getConcatenatedMatrix(mtx);
+					
+					if (hitArea) {
+						mtx.appendTransform(hitArea.x+child.regX, hitArea.y+child.regY, hitArea.scaleX, hitArea.scaleY, hitArea.rotation, hitArea.skewX, hitArea.skewY, hitArea.regX, hitArea.regY);
+						mtx.alpha *= hitArea.alpha/child.alpha;
+					}
+					
+					ctx.globalAlpha = mtx.alpha;
+					ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx-x, mtx.ty-y);
+					(hitArea||child).draw(ctx);
+					if (!this._testHit(ctx)) { continue; }
+					canvas.width = 0;
+					canvas.width = 1;
+					if (hasHandler) { return this; }
+					else if (arr) { arr.push(child); }
+					else { return child; }
 				}
-				
-				ctx.globalAlpha = mtx.alpha;
-				ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx-x, mtx.ty-y);
-				(hitArea||child).draw(ctx);
-				if (!this._testHit(ctx)) { continue; }
-				canvas.width = 0;
-				canvas.width = 1;
-				if (hasHandler) { return this; }
-				else if (arr) { arr.push(child); }
-				else { return child; }
 			}
 		}
 		return null;
@@ -531,7 +540,7 @@ var p = Container.prototype = new DisplayObject();
 	 * @protected
 	 * @return {Point}
 	 **/
-	Container.prototype._measureDimensions = function(raw) {
+	p._measureDimensions = function(raw) {
 		var l = this.children.length;
 		if (l === 0) return new Point();
 		
@@ -550,7 +559,7 @@ var p = Container.prototype = new DisplayObject();
 	 * @param {Rectangle} dimensions
 	 * @param {DisplayObject} object
 	 **/
-	Container.prototype._expandDimensionsFromObject = function(dimensions, object, raw) {
+	p._expandDimensionsFromObject = function(dimensions, object, raw) {
 		var isAbove, isTaller, isLeft, isWider, posX = object.x, posY = object.y,
 			objectDimensions = raw ? object.getRawSize() : object.getSize();
 

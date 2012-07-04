@@ -37,9 +37,11 @@
 * @param {Number} stageX The mouseX position relative to the stage.
 * @param {Number} stageY The mouseY position relative to the stage.
 * @param {MouseEvent} nativeEvent The native DOM event related to this mouse event.
+* @param {Number} pointerID
+* @param {Boolean} primary
 **/
-var MouseEvent = function(type, stageX, stageY, nativeEvent) {
-  this.initialize(type, stageX, stageY, nativeEvent);
+var MouseEvent = function(type, stageX, stageY, nativeEvent, pointerID, primary) {
+  this.initialize(type, stageX, stageY, nativeEvent, pointerID, primary);
 }
 var p = MouseEvent.prototype = new NativeEvent();
 var s = MouseEvent;
@@ -58,6 +60,18 @@ var s = MouseEvent;
 	 * @type Number
 	 **/
 	p.stageY = 0;
+
+	/**
+	 * @property pointerID
+	 * @type {Number}
+	 **/
+	p.pointerID = 0;
+
+	/**
+	 * @property primary
+	 * @type {Boolean}
+	 **/
+	p.primary = false;
 
 	/**
 	 * @property CLICK
@@ -121,10 +135,12 @@ var s = MouseEvent;
 	 * @method initialize
 	 * @protected
 	 **/
-	p.initialize = function(type, stageX, stageY, nativeEvent) {
+	p.initialize = function(type, stageX, stageY, nativeEvent, pointerID, primary) {
 		this.NativeEvent_initialize(type, nativeEvent);
 		this.stageX = stageX;
 		this.stageY = stageY;
+		this.pointerID = pointerID;
+		this.primary = primary;
 	}
 
 // public methods:
@@ -134,7 +150,7 @@ var s = MouseEvent;
 	 * @return {MouseEvent} a clone of the MouseEvent instance.
 	 **/
 	p.clone = function() {
-		return new MouseEvent(this.type, this.stageX, this.stageY, this.nativeEvent);
+		return new MouseEvent(this.type, this.stageX, this.stageY, this.nativeEvent, this.pointerID, this.primary);
 	}
 
 	/**

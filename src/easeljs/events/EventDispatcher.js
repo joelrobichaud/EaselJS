@@ -35,10 +35,15 @@ var s = EventDispatcher;
 	 * @method addEventListener
 	 * @param {String} type
 	 * @param {Function} handler
-	 * @param {Object} context
+	 * @param {Object} context [Default: null]
+	 * @param {Number} priority [Default: 1]
 	 **/
-	p.addEventListener = function(type, handler, context) {
-		var handlerObject = { "handler": handler, "context": context };
+	p.addEventListener = function(type, handler, context, priority) {
+		var handlerObject = { 
+			"handler": handler,
+			"context": context || null,
+			"priority": priority !== undefined ? priority : 1
+		};
 
 		if (this.hasEventListener(type)) {
 			this._handlers[type].push(handlerObject);
@@ -93,11 +98,23 @@ var s = EventDispatcher;
 	 **/
 	p.dispatchEvent = function(event) {
 		var handlerObjectsForType = (this._handlers[event.type] || []).concat(this._handlers[Event.ALL] || []);
+		handlerObjectsForType.sort(sortByPriority);
 
 		for (var i = 0; i < handlerObjectsForType.length; i++) {
 			event.target = this;
-			handlerObjectsForType[i].handler.call(handlerObjectsForType[i].context || null, event);
+			handlerObjectsForType[i].handler.call(handlerObjectsForType[i].context || event.target, event);
 		}
+	}
+	
+	/**
+	 * @method sortByPriority
+	 * @private
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @return {Number}
+	 */
+	function sortByPriority(a, b) {
+		return b.priority - a.priority;
 	}
 
 window.EventDispatcher = EventDispatcher;

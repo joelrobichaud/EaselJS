@@ -61,7 +61,8 @@ var p = Stage.prototype = new Container();
 	 **/
 	p.autoClear = true;
 
-	/** The canvas the stage will render to. Multiple stages can share a single canvas, but you must disable autoClear for all but the
+	/**
+	 * The canvas the stage will render to. Multiple stages can share a single canvas, but you must disable autoClear for all but the
 	 * first stage that will be ticked (or they will clear each other's render).
 	 * @property canvas
 	 * @type HTMLCanvasElement
@@ -94,14 +95,16 @@ var p = Stage.prototype = new Container();
 	 **/
 	p.snapToPixelEnabled = false;
 
-	/** Indicates whether the mouse is currently within the bounds of the canvas.
+	/**
+	 * Indicates whether the mouse is currently within the bounds of the canvas.
 	 * @property mouseInBounds
 	 * @type Boolean
 	 * @default false
 	 **/
 	p.mouseInBounds = false;
 
-	/** If false, tick callbacks will be called on all display objects on the stage prior to rendering to the canvas.
+	/**
+	 * If false, tick callbacks will be called on all display objects on the stage prior to rendering to the canvas.
 	 * @property tickOnUpdate
 	 * @type Boolean
 	 * @default false
@@ -110,25 +113,28 @@ var p = Stage.prototype = new Container();
 
 // private properties:
 	/**
-	 * @property _activeMouseEvent
-	 * @protected
-	 * @type MouseEvent
+	 * Holds objects with data for each active pointer id. Each object has the following properties:
+	 * x, y, event, target, overTarget, overX, overY, inBounds
+	 * @property _pointerData
+	 * @type Object
+	 * @private
 	 **/
-	p._activeMouseEvent = null;
+	p._pointerData = null;
 
 	/**
-	 * @property _activeMouseTarget
-	 * @protected
-	 * @type DisplayObject
+	 * Number of active pointers.
+	 * @property _pointerCount
+	 * @type Object
+	 * @private
 	 **/
-	p._activeMouseTarget = null;
+	p._pointerCount = 0;
 
 	/**
-	 * @property _activeDragTarget
-	 * @protected
-	 * @type DisplayObject
+	 * @property _primaryPointerID
+	 * @type Number
+	 * @private
 	 **/
-	p._activeDragTarget = null;
+	p._primaryPointerID = null;
 
 	/**
 	 * @property _mouseOverIntervalID
@@ -136,27 +142,6 @@ var p = Stage.prototype = new Container();
 	 * @type Number
 	 **/
 	p._mouseOverIntervalID = null;
-
-	/**
-	 * @property _mouseOverX
-	 * @protected
-	 * @type Number
-	 **/
-	p._mouseOverX = 0;
-
-	/**
-	 * @property _mouseOverY
-	 * @protected
-	 * @type Number
-	 **/
-	p._mouseOverY = 0;
-
-	/**
-	 * @property _mouseOverTarget
-	 * @protected
-	 * @type DisplayObject
-	 **/
-	p._mouseOverTarget = null;
 
 // constructor:
 	/**
@@ -175,6 +160,7 @@ var p = Stage.prototype = new Container();
 	p.initialize = function(canvas) {
 		this.Container_initialize();
 		this.canvas = (canvas instanceof HTMLCanvasElement) ? canvas : document.getElementById(canvas);
+		this._pointerData = {};
 		this._enableMouseEvents();
 		this._enableKeyboardEvents();
 	}
@@ -337,8 +323,23 @@ var p = Stage.prototype = new Container();
 		evtTarget.addEventListener("mouseup", function(e) { o._handleMouseUp(e); }, false);
 		evtTarget.addEventListener("mousemove", function(e) { o._handleMouseMove(e); }, false);
 		evtTarget.addEventListener("dblclick", function(e) { o._handleDoubleClick(e); }, false);
-		// this is to facilitate extending Stage:
-		if (this.canvas) { this.canvas.addEventListener("mousedown", function(e) { o._handleMouseDown(e); }, false); }
+		evtTarget.addEventListener("mousedown", function(e) { o._handleMouseDown(e); }, false);
+	}
+
+	/**
+	 * @method _getPointerData
+	 * @protected
+	 * @param {Number} id
+	 * @return {Object}
+	 **/
+	p._getPointerData = function(id) {
+		var data = this._pointerData[id];
+		if (!data) {
+			data = this._pointerData[id] = {};
+			// if it's the mouse (id == NaN) or the first new touch, then make it the primary pointer id:
+			if (this._primaryPointerID == null) { this._primaryPointerID = id; }
+		}
+		return data;
 	}
 
 	/**
@@ -382,40 +383,56 @@ var p = Stage.prototype = new Container();
 	 * @param {MouseEvent} e
 	 **/
 	p._handleMouseMove = function(e) {
-		if (!this.canvas) {
-			this.mouseX = this.mouseY = null;
-			return;
-		}
 		if(!e){ e = window.event; }
+		this._handlePointerMove(-1, e, e.pageX, e.pageY);
+	}
 
-		this._updateMousePosition(e.pageX, e.pageY);
-		if (!this.mouseInBounds) { return; }
+	/**
+	 * @method _handlePointerMove
+	 * @protected
+	 * @param {Number} id
+	 * @param {Event} e
+	 * @param {Number} pageX
+	 * @param {Number} pageY
+	 **/
+	p._handlePointerMove = function(id, e, pageX, pageY) {
+		if (!this.canvas) { return; } // this.mouseX = this.mouseY = null;
+		var o = this._getPointerData(id);
 
-		var evt = new MouseEvent(MouseEvent.MOUSE_MOVE, this.mouseX, this.mouseY, e);
+		var inBounds = o.inBounds;
+		this._updatePointerPosition(id, pageX, pageY);
+		if (!inBounds && !o.inBounds) { return; }
+		var evt = new MouseEvent(MouseEvent.MOUSE_MOVE, o.x, o.y, e, id, id == this._primaryPointerID);
 
 		if (this.hasEventListener(MouseEvent.MOUSE_MOVE)) { this.dispatchEvent(evt); }
-		if (this._activeMouseEvent && this._activeMouseEvent.hasEventListener(MouseEvent.MOUSE_MOVE)) { this._activeMouseEvent.dispatchEvent(evt); }
+		if (o.event && o.event.hasEventListener(MouseEvent.MOUSE_MOVE)) { o.event.dispatchEvent(evt); }
 		if (this._activeDragTarget) { this._activeDragTarget.drag(evt); }
 	}
 
 	/**
-	 * @method _updateMousePosition
+	 * @method _updatePointerPosition
 	 * @protected
+	 * @param {Number} id
 	 * @param {Number} pageX
 	 * @param {Number} pageY
 	 **/
-	p._updateMousePosition = function(pageX, pageY) {
-		var o = this.canvas;
+	p._updatePointerPosition = function(id, pageX, pageY) {
+		var element = this.canvas;
 		do {
-			pageX -= o.offsetLeft;
-			pageY -= o.offsetTop;
-		} while (o = o.offsetParent);
-
-		this.mouseInBounds = (pageX >= 0 && pageY >= 0 && pageX < this.canvas.width && pageY < this.canvas.height);
-
-		if (this.mouseInBounds) {
-			this.mouseX = pageX;
-			this.mouseY = pageY;
+			pageX -= element.offsetLeft;
+			pageY -= element.offsetTop;
+		} while (element = element.offsetParent);
+		
+		var o = this._getPointerData(id);
+		if (o.inBounds = (pageX >= 0 && pageY >= 0 && pageX < this.canvas.width && pageY < this.canvas.height)) {
+			o.x = pageX;
+			o.y = pageY;
+		}
+		
+		if (id == this._primaryPointerID) {
+			this.mouseX = o.x;
+			this.mouseY = o.y;
+			this.mouseInBounds = o.inBounds;
 		}
 	}
 
@@ -425,19 +442,30 @@ var p = Stage.prototype = new Container();
 	 * @param {MouseEvent} e
 	 **/
 	p._handleMouseUp = function(e) {
-		var upEvt = new MouseEvent(MouseEvent.MOUSE_UP, this.mouseX, this.mouseY, e);
-		var clickEvt = new MouseEvent(MouseEvent.CLICK, this.mouseX, this.mouseY, e);
+		this._handlePointerUp(-1, e, false);
+	}
 
-		if (this.hasEventListener(MouseEvent.MOUSE_UP)) { this.dispatchEvent(upEvt); }
-		if (this.hasEventListener(MouseEvent.CLICK)) { this.dispatchEvent(clickEvt); }
-
-		if (this._activeMouseEvent && this._activeMouseEvent.hasEventListener(MouseEvent.MOUSE_UP)) { this._activeMouseEvent.dispatchEvent(upEvt); }
-		if (this._activeMouseTarget && this._activeMouseTarget.hasEventListener(MouseEvent.CLICK) &&
-				this._getObjectsUnderPoint(this.mouseX, this.mouseY, null, true, (this._mouseOverIntervalID ? 3 : 1)) == this._activeMouseTarget) {
-
-			this._activeMouseTarget.dispatchEvent(clickEvt);
+	/**
+	 * @method _handlePointerUp
+	 * @protected
+	 * @param {Number} id
+	 * @param {Event} e
+	 * @param {Boolean} clear
+	 **/
+	p._handlePointerUp = function(id, e, clear) {
+		var o = this._getPointerData(id);
+		
+		var evt = new MouseEvent(MouseEvent.MOUSE_UP, o.x, o.y, e, id, id==this._primaryPointerID);
+		if (this.hasEventListener(MouseEvent.MOUSE_UP)) { this.dispatchEvent(evt); }
+		// TODO: should this event have the target set to the original target? Ditto for mousemove.
+		if (o.event && o.event.hasEventListener(MouseEvent.MOUSE_UP)) { o.event.dispatchEvent(evt); }
+		if (o.target && o.target.hasEventListener(MouseEvent.CLICK) && this._getObjectsUnderPoint(o.x, o.y, null, true, (this._mouseOverIntervalID ? 3 : 1)) == o.target) {
+			o.target.dispatchEvent(new MouseEvent(MouseEvent.CLICK, o.x, o.y, e, id, id==this._primaryPointerID));
 		}
-		this._activeMouseEvent = this._activeMouseTarget = null;
+		if (clear) {
+			if (id == this._primaryPointerID) { this._primaryPointerID = null; }
+			delete(this._pointerData[id]);
+		} else { o.event = o.target = null; }
 	}
 
 	/**
@@ -446,20 +474,32 @@ var p = Stage.prototype = new Container();
 	 * @param {MouseEvent} e
 	 **/
 	p._handleMouseDown = function(e) {
-		var evt = new MouseEvent(MouseEvent.MOUSE_DOWN, this.mouseX, this.mouseY, e);
+		this._handlePointerDown(-1, e, false);
+	}
 
+	/**
+	 * @method _handlePointerDown
+	 * @protected
+	 * @param {Number} id
+	 * @param {Event} e
+	 * @param {Number} pageX
+	 * @param {Number} pageY
+	 **/
+	p._handlePointerDown = function(id, e, x, y) {
+		var o = this._getPointerData(id);
+		if (y != null) { this._updatePointerPosition(id, x, y); }
+		
 		if (this.hasEventListener(MouseEvent.MOUSE_DOWN)) {
-			this.dispatchEvent(evt);
-			this._activeMouseEvent = evt;
+			this.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_DOWN, o.x, o.y, e, id, id==this._primaryPointerID));
 		}
-
-		var target = this._getObjectsUnderPoint(this.mouseX, this.mouseY, null, (this._mouseOverIntervalID ? 3 : 1));
+		var target = this._getObjectsUnderPoint(o.x, o.y, null, (this._mouseOverIntervalID ? 3 : 1));
 		if (target && target !== this) {
 			if (target.hasEventListener(MouseEvent.MOUSE_DOWN)) {
+				var evt = new MouseEvent(MouseEvent.MOUSE_DOWN, o.x, o.y, e, id, id==this._primaryPointerID);
 				target.dispatchEvent(evt);
-				this._activeMouseEvent = evt;
+				if (evt.hasEventListener(MouseEvent.MOUSE_MOVE) || evt.hasEventListener(MouseEvent.MOUSE_UP)) { o.event = evt; }
 			}
-			this._activeMouseTarget = target;
+			o.target = target;
 		}
 	}
 
@@ -468,8 +508,11 @@ var p = Stage.prototype = new Container();
 	 * @protected
 	 **/
 	p._testMouseOver = function() {
+		// for now, this only tests the mouse.
+		if (this._primaryPointerID != -1) { return; }
+		
+		// TODO: this should use pointerID instead of deprecated properties
 		if (this.mouseX == this._mouseOverX && this.mouseY == this._mouseOverY && this.mouseInBounds) { return; }
-
 		var target = null;
 		if (this.mouseInBounds) {
 			target = this._getObjectsUnderPoint(this.mouseX, this.mouseY, null, 3);
@@ -479,10 +522,10 @@ var p = Stage.prototype = new Container();
 
 		if (this._mouseOverTarget != target) {
 			if (this._mouseOverTarget && this._mouseOverTarget.hasEventListener(MouseEvent.ROLL_OUT)) {
-				this._mouseOverTarget.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OUT, this.mouseX, this.mouseY, this._mouseOverTarget));
+				this._mouseOverTarget.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OUT, this.mouseX, this.mouseY));
 			}
 			if (target && target.hasEventListener(MouseEvent.ROLL_OVER)) {
-				target.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER, this.mouseX, this.mouseY, target));
+				target.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER, this.mouseX, this.mouseY));
 			}
 			this._mouseOverTarget = target;
 		}
@@ -494,8 +537,9 @@ var p = Stage.prototype = new Container();
 	 * @param {MouseEvent} e
 	 **/
 	p._handleDoubleClick = function(e) {
+		// TODO: add Touch support for double tap.
 		if (this.hasEventListener(MouseEvent.DOUBLE_CLICK)) {
-			this.dispatchEvent(new MouseEvent(MouseEvent.DOUBLE_CLICK, this.mouseX, this.mouseY, e));
+			this.dispatchEvent(new MouseEvent(MouseEvent.DOUBLE_CLICK, this.mouseX, this.mouseY, e, NaN, true));
 		}
 
 		var target = this._getObjectsUnderPoint(this.mouseX, this.mouseY, null, (this._mouseOverIntervalID ? 3 : 1));

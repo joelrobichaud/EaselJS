@@ -85,7 +85,7 @@ var p = DOMElement.prototype = new DisplayObject();
 	p.initialize = function(htmlElement) {
 		if (typeof(htmlElement)=="string") { htmlElement = document.getElementById(htmlElement); }
 		this.DisplayObject_initialize();
-		this.mouseEnabled = false;
+		//this.mouseEnabled = false;
 		this.htmlElement = htmlElement;
 		if (htmlElement) {
 			this._style = htmlElement.style;
@@ -151,7 +151,7 @@ var p = DOMElement.prototype = new DisplayObject();
 
 	/**
 	 * Not applicable to DOMElement.
-	 * @method updateCache
+	 * @method hitTest
 	 **/
 	p.hitTest = function() {}
 
@@ -159,19 +159,19 @@ var p = DOMElement.prototype = new DisplayObject();
 	 * Not applicable to DOMElement.
 	 * @method localToGlobal
 	 **/
-	p.localToGlobal = function() {}
+	//p.localToGlobal = function() {}
 
 	/**
 	 * Not applicable to DOMElement.
 	 * @method globalToLocal
 	 **/
-	p.globalToLocal = function() {}
+	//p.globalToLocal = function() {}
 
 	/**
 	 * Not applicable to DOMElement.
 	 * @method localToLocal
 	 **/
-	p.localToLocal = function() {}
+	//p.localToLocal = function() {}
 
 	/**
 	 * This presently clones the DOMElement instance, but not the associated HTMLElement.

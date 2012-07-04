@@ -5,18 +5,21 @@ CONFIGURATION
 */
 // listing of all source files, with dependencies listed in order:
 var SOURCE_FILES = [
-	"../src/easeljs/utils/UID.js",
-	"../src/easeljs/utils/Ticker.js",
 	"../src/easeljs/events/EventDispatcher.js",
-	"../src/easeljs/utils/Timer.js",
 	"../src/easeljs/events/Event.js",
 	"../src/easeljs/events/NativeEvent.js",
 	"../src/easeljs/events/TimerEvent.js",
 	"../src/easeljs/events/MouseEvent.js",
 	"../src/easeljs/events/KeyboardEvent.js",
+	
+	"../src/easeljs/utils/UID.js",
+	"../src/easeljs/utils/Ticker.js",
+	"../src/easeljs/utils/Timer.js",
+
 	"../src/easeljs/geom/Matrix2D.js",
 	"../src/easeljs/geom/Point.js",
 	"../src/easeljs/geom/Rectangle.js",
+	
 	"../src/easeljs/display/Shadow.js",
 	"../src/easeljs/display/SpriteSheet.js",
 	"../src/easeljs/display/Graphics.js",
@@ -27,13 +30,18 @@ var SOURCE_FILES = [
 	"../src/easeljs/display/BitmapAnimation.js",
 	"../src/easeljs/display/Shape.js",
 	"../src/easeljs/display/Text.js",
+	"../src/easeljs/display/DOMElement.js",
+
 	"../src/easeljs/utils/SpriteSheetUtils.js",
 	"../src/easeljs/utils/SpriteSheetBuilder.js",
-	"../src/easeljs/display/DOMElement.js",
+
 	"../src/easeljs/filters/Filter.js",
 	//"../src/easeljs/filters/BoxBlurFilter.js",
 	//"../src/easeljs/filters/ColorFilter.js",
 	//"../src/easeljs/filters/ColorMatrixFilter.js",
+	//"../src/easeljs/filters/AlphaMaskFilter.js",
+	//"../src/easeljs/filters/AlphaMapFilter.js",
+
 	"../src/easeljs/ui/Touch.js",
 	"../src/easeljs/ui/Keyboard.js"
 ];
