@@ -85,7 +85,6 @@ var p = DOMElement.prototype = new DisplayObject();
 	p.initialize = function(htmlElement) {
 		if (typeof(htmlElement)=="string") { htmlElement = document.getElementById(htmlElement); }
 		this.DisplayObject_initialize();
-		//this.mouseEnabled = false;
 		this.htmlElement = htmlElement;
 		if (htmlElement) {
 			this._style = htmlElement.style;
@@ -156,24 +155,6 @@ var p = DOMElement.prototype = new DisplayObject();
 	p.hitTest = function() {}
 
 	/**
-	 * Not applicable to DOMElement.
-	 * @method localToGlobal
-	 **/
-	//p.localToGlobal = function() {}
-
-	/**
-	 * Not applicable to DOMElement.
-	 * @method globalToLocal
-	 **/
-	//p.globalToLocal = function() {}
-
-	/**
-	 * Not applicable to DOMElement.
-	 * @method localToLocal
-	 **/
-	//p.localToLocal = function() {}
-
-	/**
 	 * This presently clones the DOMElement instance, but not the associated HTMLElement.
 	 * @method clone
 	 * @return {DOMElement} a clone of the DOMElement instance.
@@ -198,6 +179,16 @@ var p = DOMElement.prototype = new DisplayObject();
 		if (this.htmlElement == null) { return; }
 		this.htmlElement.style.visibility = "hidden";
 		if (this.onTick) { this.onTick(data); }
+	}
+
+	/**
+	 * @method _measureDimensions
+	 * @protected
+	 * @return {Point}
+	 **/
+	p._measureDimensions = function() {
+		var o = this.htmlElement;
+		return new Point(o.offsetWidth, o.offsetHeight);
 	}
 
 	/* Not needed with current setup:

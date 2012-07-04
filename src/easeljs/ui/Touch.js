@@ -85,10 +85,10 @@ var Touch = function() {
 	 * @param {Stage} stage
 	 **/
 	Touch._IOS_enable = function(stage) {
-		window.addEventListener("touchstart", function(e) { Touch._IOS_handleEvent(stage,e); }, false);
-		window.addEventListener("touchmove", function(e) { Touch._IOS_handleEvent(stage,e); }, false);
-		window.addEventListener("touchend", function(e) { Touch._IOS_handleEvent(stage,e); }, false);
-		window.addEventListener("touchcancel", function(e) { Touch._IOS_handleEvent(stage,e); }, false);
+		document.addEventListener("touchstart", function(e) { Touch._IOS_handleEvent(stage,e); }, false);
+		document.addEventListener("touchmove", function(e) { Touch._IOS_handleEvent(stage,e); }, false);
+		document.addEventListener("touchend", function(e) { Touch._IOS_handleEvent(stage,e); }, false);
+		document.addEventListener("touchcancel", function(e) { Touch._IOS_handleEvent(stage,e); }, false);
 	}
 
 	/**
@@ -120,7 +120,7 @@ var Touch = function() {
 		 * @param {Stage} stage
 		 **/
 		Touch._IE_enable = function(stage) {
-			window.addEventListener("MSPointerDown", function(e) { Touch._IE_handleEvent(stage,e); }, false);
+			document.addEventListener("MSPointerDown", function(e) { Touch._IE_handleEvent(stage,e); }, false);
 			window.addEventListener("MSPointerMove", function(e) { Touch._IE_handleEvent(stage,e); }, false);
 			window.addEventListener("MSPointerUp", function(e) { Touch._IE_handleEvent(stage,e); }, false);
 			window.addEventListener("MSPointerCancel", function(e) { Touch._IE_handleEvent(stage,e); }, false);
