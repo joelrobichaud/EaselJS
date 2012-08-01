@@ -63,15 +63,21 @@ var s = MouseEvent;
 
 	/**
 	 * @property pointerID
-	 * @type {Number}
+	 * @type Number
 	 **/
 	p.pointerID = 0;
 
 	/**
 	 * @property primary
-	 * @type {Boolean}
+	 * @type Boolean
 	 **/
 	p.primary = false;
+
+	/**
+	 * @property delta
+	 * @type Number
+	 **/
+	p.delta = 0;
 
 	/**
 	 * @property CLICK
@@ -122,6 +128,13 @@ var s = MouseEvent;
 	 **/
 	s.ROLL_OUT = "rollOut";
 
+	/**
+	 * @property MOUSE_WHEEL
+	 * @static
+	 * @type String
+	 **/
+	s.MOUSE_WHEEL = "mouseWheel";
+
 // constructor:
 	/**
 	 * @property NativeEvent_initialize
@@ -141,6 +154,10 @@ var s = MouseEvent;
 		this.stageY = stageY;
 		this.pointerID = pointerID;
 		this.primary = primary;
+		
+		if (type === MouseEvent.MOUSE_WHEEL) {
+			this.delta = nativeEvent.wheelDelta/120 || -nativeEvent.detail/3;
+		}
 	}
 
 // public methods:

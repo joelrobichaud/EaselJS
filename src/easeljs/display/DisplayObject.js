@@ -524,6 +524,14 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	}
 
 	/**
+	 * @method getCenterPoint
+	 * @return {Point}
+	 */
+	p.getCenterPoint = function() {
+		return new Point(this.x + this.getWidth() * 0.5, this.y + this.getHeight() * 0.5);
+	}
+
+	/**
 	 * Transforms the specified x and y position from the coordinate space of the display object
 	 * to the global (stage) coordinate space. For example, this could be used to position an HTML label
 	 * over a specific point on a nested display object. Returns a Point instance with x and y properties
@@ -642,7 +650,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Number}
 	 **/
 	p.getWidth = function() {
-		if (this.nominalBounds) { return this.nominalBounds.width; }
+		var b = this.nominalBounds;
+		if (b) { return b.width + b.x; }
 		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return Math.abs(dimensions.x * mtx.a + dimensions.y * mtx.b);
@@ -653,7 +662,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 ** @return {Number}
 	 */
 	p.getHeight = function() {
-		if (this.nominalBounds) { return this.nominalBounds.height; }
+		var b = this.nominalBounds;
+		if (b) { return b.height + b.y; }
 		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return Math.abs(dimensions.x * mtx.c + dimensions.y * mtx.d);
@@ -664,7 +674,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Object}
 	 **/
 	p.getSize = function() {
-		if (this.nominalBounds) { return { width: this.nominalBounds.width, height: this.nominalBounds.height }; }
+		var b = this.nominalBounds;
+		if (b) { return { width: b.width + b.x, height: b.height + b.y }; }
 		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return {
@@ -712,7 +723,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 		var ctx = DisplayObject._hitTestContext;
 		var canvas = DisplayObject._hitTestCanvas;
 
-		ctx.setTransform(1,  0, 0, 1, -x, -y);
+		ctx.setTransform(1, 0, 0, 1, -x, -y);
 		this.draw(ctx);
 
 		var hit = this._testHit(ctx);
@@ -723,11 +734,15 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	}
 
 	/** 
-	 * Shortcut to hitTest
-	 * @property hitTestPoint
-	 * @type Function
+	 * @method hitTestPoint
+	 * @param {Number} x The x position to check (global)
+	 * @param {Number} y The y position to check (global)
+	 * @return {Boolean} A Boolean indicting whether a visible portion of the DisplayObject intersect the specified Point
 	 **/
-	p.hitTestPoint = p.hitTest;
+	p.hitTestPoint = function(x, y) {
+		var pos = this.parent.localToGlobal(this.x-this.regX, this.y-this.regY); 
+		return (x >= pos.x && x <= pos.x + this.getWidth() && y >= pos.y && y <= pos.y + this.getHeight());
+	}
 
 	/**
 	 * @method hitTestObject
@@ -735,8 +750,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Boolean}
 	 **/
 	p.hitTestObject = function(obj) {
-		var posA = this.parent.localToGlobal(this.x, this.y), 
-			posB = obj.parent.localToGlobal(obj.x, obj.y);
+		var posA = this.parent.localToGlobal(this.x-this.regX, this.y-this.regY), 
+			posB = obj.parent.localToGlobal(obj.x-obj.regX, obj.y-obj.regY);
 
 		if (posA.y + this.getHeight() < posB.y) return false;
 		if (posA.y > posB.y + obj.getHeight()) 	return false;
@@ -755,10 +770,10 @@ var p = DisplayObject.prototype = new EventDispatcher();
 		if (!stage) { return; }
 
 		var current = this.parent.localToGlobal(this.x, this.y)
-		  , startX = stage.mouseX
-		  , startY = stage.mouseY
-		  , offsetX = lockCenter ? this.getWidth() * 0.5 : current.x
-		  , offsetY = lockCenter ? this.getHeight() * 0.5 : current.y
+		  , startX  = stage.mouseX
+		  , startY  = stage.mouseY
+		  , offsetX = lockCenter ? this.getWidth()  * 0.5 - this.regX : current.x
+		  , offsetY = lockCenter ? this.getHeight() * 0.5 - this.regY : current.y
 		;
 
 		if (lockCenter) {
@@ -807,32 +822,32 @@ var p = DisplayObject.prototype = new EventDispatcher();
 		if (bounds) {
 			current = new Point(destination.x, destination.y);
 
-			if (bounds.width <= this.getWidth() || bounds.height <= this.getHeight())
+			if (bounds.width < this.getWidth() || bounds.height < this.getHeight())
 			{
 				if (current.x > bounds.x) {
 					destination.x = bounds.x;
-				} else if (current.x + this.getWidth() < bounds.width) {
-					destination.x = bounds.width - this.getWidth();
+				} else if (current.x + this.getWidth() < bounds.x + bounds.width) {
+					destination.x = bounds.x + bounds.width - this.getWidth();
 				}
 
 				if (current.y > bounds.y) {
 					destination.y = bounds.y;
-				} else if (current.y + this.getHeight() < bounds.height) {
-					destination.y = bounds.height - this.getHeight();
+				} else if (current.y + this.getHeight() < bounds.y + bounds.height) {
+					destination.y = bounds.y + bounds.height - this.getHeight();
 				}
 			}
 			else
 			{
 				if (current.x < bounds.x) {
 					destination.x = bounds.x;
-				} else if (current.x + this.getWidth() > bounds.width) {
-					destination.x = bounds.width - this.getWidth();
+				} else if (current.x + this.getWidth() > bounds.x + bounds.width) {
+					destination.x = bounds.x + bounds.width - this.getWidth();
 				}
 
 				if (current.y < bounds.y) {
 					destination.y = bounds.y;
-				} else if (current.y + this.getHeight() > bounds.height) {
-					destination.y = bounds.height - this.getHeight();
+				} else if (current.y + this.getHeight() > bounds.y + bounds.height) {
+					destination.y = bounds.y + bounds.height - this.getHeight();
 				}
 			}
 		}

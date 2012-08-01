@@ -48,9 +48,10 @@
 * @extends DisplayObject
 * @constructor
 * @param {HTMLElement} htmlElement A reference or id for the DOM element to manage.
+* @param {Boolean} wrapperOnly Wether the DOMElement should be rendered using properties from EaselJS
 **/
-var DOMElement = function(htmlElement) {
-  this.initialize(htmlElement);
+var DOMElement = function(htmlElement, wrapperOnly) {
+  this.initialize(htmlElement, wrapperOnly);
 }
 var p = DOMElement.prototype = new DisplayObject();
 
@@ -61,6 +62,12 @@ var p = DOMElement.prototype = new DisplayObject();
 	 * @type HTMLElement
 	 **/
 	p.htmlElement = null;
+
+	/**
+	 * @property wrapperOnly
+	 * @type Boolean
+	 **/
+	p.wrapperOnly = false;
 
 // private properties:
 	/**
@@ -82,14 +89,18 @@ var p = DOMElement.prototype = new DisplayObject();
 	 * @method initialize
 	 * @protected
 	 **/
-	p.initialize = function(htmlElement) {
+	p.initialize = function(htmlElement, wrapperOnly) {
 		if (typeof(htmlElement)=="string") { htmlElement = document.getElementById(htmlElement); }
 		this.DisplayObject_initialize();
 		this.htmlElement = htmlElement;
+		this.wrapperOnly = !!wrapperOnly;
 		if (htmlElement) {
 			this._style = htmlElement.style;
-			this._style.position = "absolute";
-			this._style.transformOrigin = this._style.webkitTransformOrigin = this._style.msTransformOrigin = this._style.MozTransformOrigin = "0% 0%";
+			if (!wrapperOnly) {
+				this._style.position = "absolute";
+				this._style.visibility = "hidden";
+				this._style.transformOrigin = this._style.webkitTransformOrigin = this._style.msTransformOrigin = this._style.MozTransformOrigin = "0% 0%";
+			}
 		}
 	}
 
@@ -103,7 +114,7 @@ var p = DOMElement.prototype = new DisplayObject();
 	 * @return {Boolean} Boolean indicating whether the display object would be visible if drawn to a canvas
 	 **/
 	p.isVisible = function() {
-		return this.htmlElement != null;
+		return this.htmlElement != null && this.getStage() != null;
 	}
 
 	/**
@@ -119,14 +130,15 @@ var p = DOMElement.prototype = new DisplayObject();
 	p.draw = function(ctx, ignoreCache) {
 		// TODO: possibly save out previous matrix values, to compare against new ones (so layout doesn't need to fire if there is no change)
 		if (this.htmlElement == null) { return; }
+		if (this.wrapperOnly) { return; }
 		var mtx = this.getConcatenatedMatrix(this._matrix);
 		
 		var o = this.htmlElement;
 		o.style.opacity = ""+mtx.alpha;
 		// this relies on the _tick method because draw isn't called if a parent is not visible.
 		o.style.visibility = this.visible ? "visible" : "hidden";
-		o.style.transform = o.style.webkitTransform = o.style.oTransform =  o.style.msTransform = ["matrix("+mtx.a,mtx.b,mtx.c,mtx.d,mtx.tx,mtx.ty+")"].join(",");
-		o.style.MozTransform = ["matrix("+mtx.a,mtx.b,mtx.c,mtx.d,mtx.tx+"px",mtx.ty+"px)"].join(",");
+		o.style.transform = o.style.webkitTransform = o.style.oTransform = o.style.msTransform = ["matrix("+mtx.a,mtx.b,mtx.c,mtx.d,(mtx.tx+0.5|0),(mtx.ty+0.5|0)+")"].join(",");
+		o.style.MozTransform = ["matrix("+mtx.a,mtx.b,mtx.c,mtx.d,(mtx.tx+0.5|0)+"px",(mtx.ty+0.5|0)+"px)"].join(",");
 		return true;
 	}
 
@@ -155,12 +167,14 @@ var p = DOMElement.prototype = new DisplayObject();
 	p.hitTest = function() {}
 
 	/**
-	 * This presently clones the DOMElement instance, but not the associated HTMLElement.
 	 * @method clone
+	 * @param {Boolean} cloneNode
 	 * @return {DOMElement} a clone of the DOMElement instance.
 	 **/
-	p.clone = function() {
-		var o = new DOMElement();
+	p.clone = function(cloneNode) {
+		var el = cloneNode ? this.htmlElement.cloneNode(true) : this.htmlElement;
+		var o = new DOMElement(el, this.wrapperOnly);
+		if (cloneNode) { this.htmlElement.parentNode.appendChild(el) }
 		this.cloneProps(o);
 		return o;
 	}
@@ -177,6 +191,7 @@ var p = DOMElement.prototype = new DisplayObject();
 // private methods:
 	p._tick = function(data) {
 		if (this.htmlElement == null) { return; }
+		if (this.wrapperOnly) { return; }
 		this.htmlElement.style.visibility = "hidden";
 		if (this.onTick) { this.onTick(data); }
 	}

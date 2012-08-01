@@ -156,6 +156,7 @@ var p = Container.prototype = new DisplayObject();
 			if (child instanceof Container) { child.dispatchEventToChildren(evt); }
 			child.dispatchEvent(evt);
 		}
+		if (child instanceof DOMElement) { child.draw(); child._style.visibility = "visible"; }
 		return child;
 	}
 
@@ -187,6 +188,7 @@ var p = Container.prototype = new DisplayObject();
 			if (child instanceof Container) { child.dispatchEventToChildren(evt); }
 			child.dispatchEvent(evt);
 		}
+		if (child instanceof DOMElement) { child.draw(); child._style.visibility = "visible"; }
 		return child;
 	}
 
@@ -466,7 +468,7 @@ var p = Container.prototype = new DisplayObject();
 		var ctx = DisplayObject._hitTestContext;
 		var canvas = DisplayObject._hitTestCanvas;
 		var mtx = this._matrix;
-		var hasHandler = (mouseEvents&1 && (this.hasEventListener(MouseEvent.MOUSE_DOWN) || this.hasEventListener(MouseEvent.CLICK)
+		var hasHandler = (mouseEvents&1 && !(this instanceof Stage) && (this.hasEventListener(MouseEvent.MOUSE_DOWN) || this.hasEventListener(MouseEvent.CLICK)
 			|| this.hasEventListener(MouseEvent.DOUBLE_CLICK))) || (mouseEvents&2 && (this.hasEventListener(MouseEvent.ROLL_OVER)
 			|| this.hasEventListener(MouseEvent.ROLL_OUT)));
 
@@ -500,13 +502,12 @@ var p = Container.prototype = new DisplayObject();
 					result = child._getObjectsUnderPoint(x, y, arr, mouseEvents);
 					if (!arr && result) { return result; }
 				}
-			} else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.hasEventListener(MouseEvent.MOUSE_DOWN)
-									|| child.hasEventListener(MouseEvent.CLICK) || child.hasEventListener(MouseEvent.DOUBLE_CLICK)))
-									|| (mouseEvents&2 && (child.hasEventListener(MouseEvent.ROLL_OVER)
-									|| child.hasEventListener(MouseEvent.ROLL_OUT)))) {
+			} else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.hasEventListener(MouseEvent.MOUSE_DOWN) || child.hasEventListener(MouseEvent.CLICK)
+					|| child.hasEventListener(MouseEvent.DOUBLE_CLICK))) || (mouseEvents&2 && (child.hasEventListener(MouseEvent.ROLL_OVER)
+					|| child.hasEventListener(MouseEvent.ROLL_OUT)))) {
 
 				if (child instanceof DOMElement) {
-					if (x >= child.x && x <= child.x + child.getWidth() && y >= child.y && y <= child.y + child.getHeight()) {
+					if (child.hitTestPoint(x, y)) {
 						if (hasHandler) { return this; }
 						if (arr) { arr.push(child); }
 						else { return child; }

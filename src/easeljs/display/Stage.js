@@ -324,6 +324,9 @@ var p = Stage.prototype = new Container();
 		evtTarget.addEventListener("mousemove", function(e) { o._handleMouseMove(e); }, false);
 		evtTarget.addEventListener("dblclick", function(e) { o._handleDoubleClick(e); }, false);
 		evtTarget.addEventListener("mousedown", function(e) { o._handleMouseDown(e); }, false);
+		
+		var scrollEvt = /Firefox/i.test(navigator.userAgent) ? "DOMMouseScroll" : "mousewheel";
+		evtTarget.addEventListener(scrollEvt, function(e) { o._handleMouseWheel(e); }, false );
 	}
 
 	/**
@@ -373,6 +376,18 @@ var p = Stage.prototype = new Container();
 	p._handleKeyDown = function(e) {
 		if (this.hasEventListener(KeyboardEvent.KEY_DOWN)) {
 			var evt = new KeyboardEvent(KeyboardEvent.KEY_DOWN, e.keyCode, e.charCode, e.ctrlKey, e.altKey, e.shiftKey, e);
+			this.dispatchEvent(evt);
+		}
+	}
+
+	/**
+	 * @method _handleMouseWheel
+	 * @protected
+	 * @param {MouseEvent} e
+	 **/
+	p._handleMouseWheel = function(e) {
+		if (this.hasEventListener(MouseEvent.MOUSE_WHEEL) && this.mouseInBounds) {
+			var evt = new MouseEvent(MouseEvent.MOUSE_WHEEL, null, null, e, null, false);
 			this.dispatchEvent(evt);
 		}
 	}
@@ -454,13 +469,16 @@ var p = Stage.prototype = new Container();
 	 **/
 	p._handlePointerUp = function(id, e, clear) {
 		var o = this._getPointerData(id);
-		
-		var evt = new MouseEvent(MouseEvent.MOUSE_UP, o.x, o.y, e, id, id==this._primaryPointerID);
-		if (this.hasEventListener(MouseEvent.MOUSE_UP)) { this.dispatchEvent(evt); }
+
+		var mUpEvent = new MouseEvent(MouseEvent.MOUSE_UP, o.x, o.y, e, id, id==this._primaryPointerID);
+		if (this.hasEventListener(MouseEvent.MOUSE_UP)) { this.dispatchEvent(mUpEvent); }
 		// TODO: should this event have the target set to the original target? Ditto for mousemove.
-		if (o.event && o.event.hasEventListener(MouseEvent.MOUSE_UP)) { o.event.dispatchEvent(evt); }
-		if (o.target && o.target.hasEventListener(MouseEvent.CLICK) && this._getObjectsUnderPoint(o.x, o.y, null, true, (this._mouseOverIntervalID ? 3 : 1)) == o.target) {
-			o.target.dispatchEvent(new MouseEvent(MouseEvent.CLICK, o.x, o.y, e, id, id==this._primaryPointerID));
+		if (o.event && o.event.hasEventListener(MouseEvent.MOUSE_UP)) { o.event.dispatchEvent(mUpEvent); }
+
+		var mClickEvent = new MouseEvent(MouseEvent.CLICK, o.x, o.y, e, id, id==this._primaryPointerID);
+		if (this.hasEventListener(MouseEvent.CLICK)) { this.dispatchEvent(mClickEvent); } 
+		if (o.target && o.target.hasEventListener(MouseEvent.CLICK) && this._getObjectsUnderPoint(o.x, o.y, null, true) == o.target) {
+			o.target.dispatchEvent(mClickEvent);
 		}
 		if (clear) {
 			if (id == this._primaryPointerID) { this._primaryPointerID = null; }
@@ -493,7 +511,7 @@ var p = Stage.prototype = new Container();
 			this.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_DOWN, o.x, o.y, e, id, id==this._primaryPointerID));
 		}
 		var target = this._getObjectsUnderPoint(o.x, o.y, null, (this._mouseOverIntervalID ? 3 : 1));
-		if (target && target !== this) {
+		if (target) {
 			if (target.hasEventListener(MouseEvent.MOUSE_DOWN)) {
 				var evt = new MouseEvent(MouseEvent.MOUSE_DOWN, o.x, o.y, e, id, id==this._primaryPointerID);
 				target.dispatchEvent(evt);
@@ -509,9 +527,8 @@ var p = Stage.prototype = new Container();
 	 **/
 	p._testMouseOver = function() {
 		// for now, this only tests the mouse.
-		if (this._primaryPointerID != -1) { return; }
+		//if (this._primaryPointerID != -1) { return; }
 		
-		// TODO: this should use pointerID instead of deprecated properties
 		if (this.mouseX == this._mouseOverX && this.mouseY == this._mouseOverY && this.mouseInBounds) { return; }
 		var target = null;
 		if (this.mouseInBounds) {
