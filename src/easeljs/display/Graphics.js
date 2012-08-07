@@ -776,7 +776,7 @@ var p = Graphics.prototype;
 	}
 	
 	/**
-	 * Draws a rounded rectangle with different corner radiuses.
+	 * Draws a rounded rectangle with different corner radii. Supports positive and negative corner radii.
 	 * @method drawRoundRectComplex
 	 * @param {Number} x
 	 * @param {Number} y
@@ -792,26 +792,29 @@ var p = Graphics.prototype;
 		this._drawnShapes.push(new Rectangle(x, y, w, h));
 		this._setDrawingPosition(x + radiusTL, y);
 
-		var pi = Math.PI, arc=this._ctx.arc, lineTo=this._ctx.lineTo;		
+		var max = (w<h?w:h)/2;
+		var mTL=0, mTR=0, mBR=0, mBL=0;
+		if (radiusTL < 0) { radiusTL *= (mTL=-1); }
+		if (radiusTL > max) { radiusTL = max; }
+		if (radiusTR < 0) { radiusTR *= (mTR=-1); }
+		if (radiusTR > max) { radiusTR = max; }
+		if (radiusBR < 0) { radiusBR *= (mBR=-1); }
+		if (radiusBR > max) { radiusBR = max; }
+		if (radiusBL < 0) { radiusBL *= (mBL=-1); }
+		if (radiusBL > max) { radiusBL = max; }
+
 		this._dirty = this._active = true;
+		var arcTo=this._ctx.arcTo, lineTo=this._ctx.lineTo;
 		this._activeInstructions.push(
-			new Command(this._ctx.moveTo, [x+radiusTL, y]),
-			new Command(lineTo, [x+w-radiusTR, y]),
-			(radiusTR>=0) ?
-				new Command(arc, [x+w-radiusTR, y+radiusTR, radiusTR, -pi/2, 0]) :
-				new Command(arc, [x+w, y, -radiusTR, pi, pi/2, true]) ,
+			new Command(this._ctx.moveTo, [x+w-radiusTR, y]),
+			new Command(arcTo, [x+w+radiusTR*mTR, y-radiusTR*mTR, x+w, y+radiusTR, radiusTR]),
 			new Command(lineTo, [x+w, y+h-radiusBR]),
-			(radiusBL>=0) ?
-				new Command(arc, [x+w-radiusBR, y+h-radiusBR, radiusBR, 0, pi/2]) :
-				new Command(arc, [x+w, y+h, -radiusBR, -pi/2, pi, true]) ,
+			new Command(arcTo, [x+w+radiusBR*mBR, y+h+radiusBR*mBR, x+w-radiusBR, y+h, radiusBR]),
 			new Command(lineTo, [x+radiusBL, y+h]),
-			(radiusBL>=0) ?
-				new Command(arc, [x+radiusBL, y+h-radiusBL, radiusBL, pi/2, pi]) :
-				new Command(arc, [x, y+h, -radiusBL, 0, -pi/2, true]) ,
+			new Command(arcTo, [x-radiusBL*mBL, y+h+radiusBL*mBL, x, y+h-radiusBL, radiusBL]),
 			new Command(lineTo, [x, y+radiusTL]),
-			(radiusTL>=0) ?
-				new Command(arc, [x+radiusTL, y+radiusTL, radiusTL, pi, -pi/2]) :
-				new Command(arc, [x, y, -radiusTL, pi/2, 0, true])
+			new Command(arcTo, [x-radiusTL*mTL, y-radiusTL*mTL, x+radiusTL, y, radiusTL]),
+			new Command(this._ctx.closePath)
 		);
 		return this;
 	} 
