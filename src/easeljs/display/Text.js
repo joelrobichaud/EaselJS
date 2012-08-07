@@ -223,7 +223,7 @@ var p = Text.prototype = new DisplayObject();
 	 * @return {Number}
 	 **/
 	p.getNumLines = function() {
-		return (this.lineWidth ? Math.ceil(this.getMeasuredWidth() / this.lineWidth) : 1) + this.text.split('\n').length - 1;
+		return this._drawText();
 	}
 	
 	/**
@@ -236,7 +236,7 @@ var p = Text.prototype = new DisplayObject();
 		this.cloneProps(o);
 		return o;
 	}
-		
+	
 	/**
 	 * Returns a string representation of this object.
 	 * @method toString
@@ -341,7 +341,7 @@ var p = Text.prototype = new DisplayObject();
 	p._measureDimensions = function() {
 		return new Point(
 			this.maxWidth || this.lineWidth || this.getMeasuredWidth(),
-			this.getNumLines() * (this.lineHeight || this.getMeasuredLineHeight())
+			this.getMeasuredHeight()
 		);
 	}
 

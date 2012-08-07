@@ -561,56 +561,54 @@ var p = Container.prototype = new DisplayObject();
 	 * @param {DisplayObject} object
 	 **/
 	p._expandDimensionsFromObject = function(dimensions, object, raw) {
-		var isAbove, isTaller, isLeft, isWider, posX = object.x, posY = object.y,
-			objectDimensions = raw ? object.getRawSize() : object.getSize();
+		var objectX = object.x - object.regX;
+		var objectY = object.y - object.regY;
 
-		posX -= object.regX;
-		posY -= object.regY;
-
+		var objectDimensions = raw ? object.getRawSize() : object.getSize();
 		if (object instanceof Text) {
 			switch (object.textAlign) {
 				case "center":
-					posX -= objectDimensions.width * 0.5; break;
+					objectX -= objectDimensions.width * 0.5; break;
 				case "right": case "end":
-					posX -= objectDimensions.width;
+					objectX -= objectDimensions.width;
 			}
 			switch (object.textBaseline) {
 				case "middle":
-					posY += objectDimensions.height * 0.5; break;
+					objectY += objectDimensions.height * 0.5; break;
 				case "ideographic": case "bottom": case "alphabetic":
 					// This is not the exact value for all of these baselines but it's close enough
-					posY += objectDimensions.height;
+					objectY += objectDimensions.height;
 			}
 		}
 
 		// Expand width
-		isLeft = posX < dimensions.x;
-		isWider = posX + objectDimensions.width > dimensions.x + dimensions.width;
+		var isLeft = objectX < dimensions.x;
+		var isWider = objectX + objectDimensions.width > dimensions.x + dimensions.width;
 		
 		if (isLeft && isWider) {
-			dimensions.width += posX + objectDimensions.width - (dimensions.x + dimensions.width);
-			dimensions.width += dimensions.x - posX;
-			dimensions.x = posX;
+			dimensions.width += objectX + objectDimensions.width - (dimensions.x + dimensions.width);
+			dimensions.width += dimensions.x - objectX;
+			dimensions.x = objectX;
 		} else if (isLeft) {
-			dimensions.width += dimensions.x - posX;
-			dimensions.x = posX;
+			dimensions.width += dimensions.x - objectX;
+			dimensions.x = objectX;
 		} else if (isWider) {
-			dimensions.width += posX + objectDimensions.width - (dimensions.x + dimensions.width);
+			dimensions.width += objectX + objectDimensions.width - (dimensions.x + dimensions.width);
 		}
 
 		// Expand height
-		isAbove = posY < dimensions.y;
-		isTaller = posY + objectDimensions.height > dimensions.y + dimensions.height;
+		var isAbove = objectY < dimensions.y;
+		var isTaller = objectY + objectDimensions.height > dimensions.y + dimensions.height;
 
 		if (isAbove && isTaller) {
-			dimensions.height += posY + objectDimensions.height - (dimensions.y + dimensions.height);
-			dimensions.height += dimensions.y - posY;
-			dimensions.y = posY;
+			dimensions.height += objectY + objectDimensions.height - (dimensions.y + dimensions.height);
+			dimensions.height += dimensions.y - objectY;
+			dimensions.y = objectY;
 		} else if (isAbove) {
-			dimensions.height += dimensions.y - posY;
-			dimensions.y = posY;
+			dimensions.height += dimensions.y - objectY;
+			dimensions.y = objectY;
 		} else if (isTaller) {
-			dimensions.height += posY + objectDimensions.height - (dimensions.y + dimensions.height);
+			dimensions.height += objectY + objectDimensions.height - (dimensions.y + dimensions.height);
 		}
 	}
 
