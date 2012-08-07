@@ -747,16 +747,18 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	/**
 	 * @method hitTestObject
 	 * @param {DisplayObject} obj
+	 * @param {Number} tolerance [Default: 0]
 	 * @return {Boolean}
 	 **/
-	p.hitTestObject = function(obj) {
+	p.hitTestObject = function(obj, tolerance) {
 		var posA = this.parent.localToGlobal(this.x-this.regX, this.y-this.regY), 
 			posB = obj.parent.localToGlobal(obj.x-obj.regX, obj.y-obj.regY);
+		tolerance = tolerance || 0;
 
-		if (posA.y + this.getHeight() < posB.y) return false;
-		if (posA.y > posB.y + obj.getHeight()) 	return false;
-		if (posA.x + this.getWidth() < posB.x) 	return false;
-		if (posA.x > posB.x + obj.getWidth()) 	return false;
+		if (posA.y + this.getHeight() < posB.y - tolerance) { return false; }
+		if (posA.y > posB.y + obj.getHeight()  + tolerance) { return false; }
+		if (posA.x + this.getWidth()  < posB.x - tolerance) { return false; }
+		if (posA.x > posB.x + obj.getWidth()   + tolerance) { return false; }
 		return true;
 	}
 
