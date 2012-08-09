@@ -598,6 +598,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @param {Number} skewY
 	 * @param {Number} regX
 	 * @param {Number} regY
+	 * @return {DisplayObject} Returns this instance. Useful for chaining commands.
 	*/
 	p.setTransform = function(x, y, scaleX, scaleY, rotation, skewX, skewY, regX, regY) {
 		this.x = x || 0;
@@ -609,6 +610,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 		this.skewY = skewY || 0;
 		this.regX = regX || 0;
 		this.regY = regY || 0;
+		return this;
 	}
 	
 	/**
