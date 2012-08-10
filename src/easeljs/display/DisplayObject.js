@@ -331,15 +331,23 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	* @protected
 	* @type Number
 	* @default 0
-	*/
+	**/
 	p._cacheDataURLID = 0;
+
+	/**
+	 * @property _cacheScale
+	 * @protected
+	 * @type Number
+	 * @default 1
+	 **/
+	p._cacheScale = 1;
 	
 	/**
 	* @property _cacheDataURL
 	* @protected
 	* @type String
 	* @default null
-	*/
+	**/
 	p._cacheDataURL = null;
 
 	/**
@@ -356,7 +364,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @type Object
 	 * @default null
 	 **/
-	p.dragInfos = null;
+	p._dragInfos = null;
 
 // constructor:
 	// separated so it can be easily addressed in subclasses:
@@ -401,8 +409,10 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * into itself).
 	 **/
 	p.draw = function(ctx, ignoreCache) {
-		if (ignoreCache || !this.cacheCanvas) { return false; }
-		ctx.drawImage(this.cacheCanvas, this._cacheOffsetX, this._cacheOffsetY);
+		var cacheCanvas = this.cacheCanvas;
+		if (ignoreCache || !cacheCanvas) { return false; }
+		var scale = this._cacheScale;
+		ctx.drawImage(cacheCanvas, this._cacheOffsetX, this._cacheOffsetY, cacheCanvas.width/scale, cacheCanvas.height/scale);
 		return true;
 	}
 	
@@ -448,21 +458,20 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @param {Number} y The y coordinate origin for the cache region.
 	 * @param {Number} width The width of the cache region.
 	 * @param {Number} height The height of the cache region.
+	 * @param {Number} scale Optional. The scale at which the cache will be created. For example, if you cache a vector shape using
+	 * myShape.cache(0,0,100,100,2) then the resulting cacheCanvas will be 200x200 px. This lets you scale and rotate
+	 * cached elements with greater fidelity. Default is 1.
 	 **/
-	p.cache = function(x, y, width, height) {
+	p.cache = function(x, y, width, height, scale) {
 		// draw to canvas.
-		var cacheCanvas = this.cacheCanvas;
-		if (cacheCanvas == null) { cacheCanvas = this.cacheCanvas = document.createElement("canvas"); }
-		var ctx = cacheCanvas.getContext("2d");
-		cacheCanvas.width = width;
-		cacheCanvas.height = height;
-		ctx.setTransform(1, 0, 0, 1, -x, -y);
-		ctx.clearRect(x, y, cacheCanvas.width, cacheCanvas.height); // some browsers don't clear correctly.
-		this.draw(ctx, true, this._matrix.reinitialize(1,0,0,1,-x,-y)); // containers require the matrix to work from
+		scale = scale || 1;
+		if (!this.cacheCanvas) { this.cacheCanvas = document.createElement("canvas"); }
+		this.cacheCanvas.width = Math.ceil(width*scale);
+		this.cacheCanvas.height = Math.ceil(height*scale);
 		this._cacheOffsetX = x;
 		this._cacheOffsetY = y;
-		this._applyFilters();
-		this.cacheID = DisplayObject._nextCacheID++;
+		this._cacheScale = scale;
+		this.updateCache();
 	}
 
 	/**
@@ -475,16 +484,16 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * whatwg spec on compositing</a>.
 	 **/
 	p.updateCache = function(compositeOperation) {
-		var cacheCanvas = this.cacheCanvas, offX = this._cacheOffsetX, offY = this._cacheOffsetY;
-		if (cacheCanvas == null) { throw "cache() must be called before updateCache()"; }
+		var cacheCanvas = this.cacheCanvas, offX = this._cacheOffsetX, offY = this._cacheOffsetY, scale = this._cacheScale;
+		if (!cacheCanvas) { throw "cache() must be called before updateCache()"; }
 		var ctx = cacheCanvas.getContext("2d");
-		ctx.setTransform(1, 0, 0, 1, -offX, -offY);
-		if (!compositeOperation) {
-			ctx.clearRect(offX, offY, cacheCanvas.width, cacheCanvas.height);
-		} else { ctx.globalCompositeOperation = compositeOperation; }
+		ctx.save();
+		if (!compositeOperation) { ctx.clearRect(offX, offY, cacheCanvas.width, cacheCanvas.height); }
+		ctx.globalCompositeOperation = compositeOperation;
+		ctx.setTransform(scale, 0, 0, scale, -offX, -offY);
 		this.draw(ctx, true);
-		if (compositeOperation) { ctx.globalCompositeOperation = "source-over"; }
 		this._applyFilters();
+		ctx.restore();
 		this.cacheID = DisplayObject._nextCacheID++;
 	}
 
@@ -495,6 +504,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	p.uncache = function() {
 		this._cacheDataURL = this.cacheCanvas = null;
 		this.cacheID = this._cacheOffsetX = this._cacheOffsetY = 0;
+		this._cacheScale = 1;
 	}
 	
 	/**
