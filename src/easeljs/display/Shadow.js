@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
 * Encapsulates the properties required to define a shadow to apply to a DisplayObject via it's .shadow property.
@@ -115,11 +118,11 @@ var p = Shadow.prototype;
 	 @return {Shadow} A clone of the current Shadow instance.
 	 **/
 	p.clone = function() {
-		return new Shadow(this.color, this.offsetX, this.offsetY, this.blur);
+		return new createjs.Shadow(this.color, this.offsetX, this.offsetY, this.blur);
 	}
 	
 	// this has to be populated after the class is defined:
 	Shadow.identity = new Shadow("transparent", 0, 0, 0);
 	
-window.Shadow = Shadow;
-}(window));
+createjs.Shadow = Shadow;
+}());

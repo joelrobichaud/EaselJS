@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
 * A Container is a nestable display lists that allows you to work with compound display elements. For
@@ -43,7 +46,7 @@
 var Container = function() {
   this.initialize();
 }
-var p = Container.prototype = new DisplayObject();
+var p = Container.prototype = new createjs.DisplayObject();
 
 // public properties:
 	/**
@@ -130,7 +133,7 @@ var p = Container.prototype = new DisplayObject();
 		
 		var children = this.children.slice(0);
 		for (var i = 0; i < l; i++) {
-			children[i].dispatchEvent(evt);
+			if (children[i].hasEventListener(evt.type)) { children[i].dispatchEvent(evt); }
 		}
 	}
 	
@@ -152,9 +155,9 @@ var p = Container.prototype = new DisplayObject();
 		child.parent = this;
 		this.children.push(child);
 		if (child.getStage()) {
-			var evt = new Event(Event.ADDED_TO_STAGE);
+			var evt = new createjs.Event("addedToStage");
 			if (child instanceof Container) { child.dispatchEventToChildren(evt); }
-			child.dispatchEvent(evt);
+			if (child.hasEventListener("addedToStage")) { child.dispatchEvent(evt); }
 		}
 		if (child instanceof DOMElement) { child.draw(); child._style.visibility = "visible"; }
 		return child;
@@ -184,9 +187,9 @@ var p = Container.prototype = new DisplayObject();
 		child.parent = this;
 		this.children.splice(index, 0, child);
 		if (child.getStage()) {
-			var evt = new Event(Event.ADDED_TO_STAGE);
+			var evt = new createjs.Event("addedToStage");
 			if (child instanceof Container) { child.dispatchEventToChildren(evt); }
-			child.dispatchEvent(evt);
+			if (child.hasEventListener("addedToStage")) { child.dispatchEvent(evt); }
 		}
 		if (child instanceof DOMElement) { child.draw(); child._style.visibility = "visible"; }
 		return child;
@@ -231,9 +234,9 @@ var p = Container.prototype = new DisplayObject();
 		var child = this.children[index];
 		if (child) {
 			if (child.getStage()) {
-				var evt = new Event(Event.REMOVED_FROM_STAGE);
+				var evt = new createjs.Event("removedFromStage");
 				if (child instanceof Container) { child.dispatchEventToChildren(evt); }
-				child.dispatchEvent(evt);
+				if (child.hasEventListener("removedFromStage")) { child.dispatchEvent(evt); }
 			}
 			if (child instanceof DOMElement) { child._style.visibility = "hidden"; }
 			child.parent = null;
@@ -251,9 +254,9 @@ var p = Container.prototype = new DisplayObject();
 		while (kids.length) {
 			kid = kids.pop();
 			if (kid.getStage()) {
-				var evt = new Event(Event.REMOVED_FROM_STAGE);
+				var evt = new createjs.Event("removedFromStage");
 				if (kid instanceof Container) { kid.dispatchEventToChildren(evt); }
-				kid.dispatchEvent(evt);
+				if (kid.hasEventListener("removedFromStage")) { kid.dispatchEvent(evt); }
 			}
 			kids.parent = null;
 		}
@@ -419,7 +422,7 @@ var p = Container.prototype = new DisplayObject();
 	 * @return {Container} A clone of the current Container instance.
 	 **/
 	p.clone = function(recursive) {
-		var o = new Container();
+		var o = new createjs.Container();
 		this.cloneProps(o);
 		if (recursive) {
 			var arr = o.children = [];
@@ -468,9 +471,9 @@ var p = Container.prototype = new DisplayObject();
 		var ctx = DisplayObject._hitTestContext;
 		var canvas = DisplayObject._hitTestCanvas;
 		var mtx = this._matrix;
-		var hasHandler = (mouseEvents&1 && !(this instanceof Stage) && (this.hasEventListener(MouseEvent.MOUSE_DOWN) || this.hasEventListener(MouseEvent.CLICK)
-			|| this.hasEventListener(MouseEvent.DOUBLE_CLICK))) || (mouseEvents&2 && (this.hasEventListener(MouseEvent.ROLL_OVER)
-			|| this.hasEventListener(MouseEvent.ROLL_OUT)));
+		var hasHandler = (mouseEvents&1 && !(this instanceof Stage) && (this.hasEventListener("mouseDown") || this.hasEventListener("click")
+			|| this.hasEventListener("doubleClick"))) || (mouseEvents&2 && (this.hasEventListener("rollOver")
+			|| this.hasEventListener("rollOut")));
 
 		// if we have a cache handy & this has a handler, we can use it to do a quick check.
 		// we can't use the cache for screening children, because they might have hitArea set.
@@ -502,9 +505,9 @@ var p = Container.prototype = new DisplayObject();
 					result = child._getObjectsUnderPoint(x, y, arr, mouseEvents);
 					if (!arr && result) { return result; }
 				}
-			} else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.hasEventListener(MouseEvent.MOUSE_DOWN) || child.hasEventListener(MouseEvent.CLICK)
-					|| child.hasEventListener(MouseEvent.DOUBLE_CLICK))) || (mouseEvents&2 && (child.hasEventListener(MouseEvent.ROLL_OVER)
-					|| child.hasEventListener(MouseEvent.ROLL_OUT)))) {
+			} else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.hasEventListener("mouseDown") || child.hasEventListener("click")
+					|| child.hasEventListener("doubleClick"))) || (mouseEvents&2 && (child.hasEventListener("rollOver")
+					|| child.hasEventListener("rollOut")))) {
 
 				if (child instanceof DOMElement) {
 					if (child.hitTestPoint(x, y)) {
@@ -543,15 +546,15 @@ var p = Container.prototype = new DisplayObject();
 	 **/
 	p._measureDimensions = function(raw) {
 		var l = this.children.length;
-		if (l === 0) return new Point();
+		if (l === 0) return new createjs.Point();
 		
-		var children = this.children.slice(0), dimensions = new Rectangle();
+		var children = this.children.slice(0), dimensions = new createjs.Rectangle();
 		for (var i = 0; i < l; i++) {
 			if (children[i].parentContainerInheritsSize) {
 				this._expandDimensionsFromObject(dimensions, children[i], raw);
 			}
 		}
-		return new Point(dimensions.width, dimensions.height);
+		return new createjs.Point(dimensions.width, dimensions.height);
 	}
 	
 	/**
@@ -612,5 +615,5 @@ var p = Container.prototype = new DisplayObject();
 		}
 	}
 
-window.Container = Container;
-}(window));
+createjs.Container = Container;
+}());

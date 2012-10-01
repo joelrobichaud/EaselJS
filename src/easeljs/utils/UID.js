@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
  * Global utility for generating sequential unique ID numbers.
@@ -57,5 +60,5 @@ var UID = function() {
 		return UID._nextID++;
 	}
 
-window.UID = UID;
-}(window));
+createjs.UID = UID;
+}());

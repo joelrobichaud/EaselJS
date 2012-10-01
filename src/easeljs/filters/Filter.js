@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
  * Base class that all filters should inherit from.
@@ -55,7 +58,7 @@ var p = Filter.prototype;
 	 * @return {Rectangle} a rectangle object indicating the margins required to draw the filter.
 	 **/
 	p.getBounds = function() {
-		return new Rectangle(0,0,0,0);
+		return new createjs.Rectangle(0,0,0,0);
 	}
 	
 	/**
@@ -87,8 +90,8 @@ var p = Filter.prototype;
 	 @return {Filter} A clone of the current Filter instance.
 	 **/
 	p.clone = function() {
-		return new Filter();
+		return new createjs.Filter();
 	}
 	
-window.Filter = Filter;
-}(window));
+createjs.Filter = Filter;
+}());

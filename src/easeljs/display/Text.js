@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 	
 /**
 * Allows you to display one or more lines of dynamic text (not user editable) in the display list.
@@ -45,7 +48,7 @@
 var Text = function(text, font, color) {
   this.initialize(text, font, color);
 }
-var p = Text.prototype = new DisplayObject();
+var p = Text.prototype = new createjs.DisplayObject();
 
 // private static properties:
 	/**
@@ -232,7 +235,7 @@ var p = Text.prototype = new DisplayObject();
 	 * @return {Point} a clone of the Point instance.
 	 **/
 	p.clone = function() {
-		var o = new Text(this.text, this.font, this.color);
+		var o = new createjs.Text(this.text, this.font, this.color);
 		this.cloneProps(o);
 		return o;
 	}
@@ -339,11 +342,11 @@ var p = Text.prototype = new DisplayObject();
 	 * @return {Point}
 	 **/
 	p._measureDimensions = function() {
-		return new Point(
+		return new createjs.Point(
 			this.maxWidth || this.lineWidth || this.getMeasuredWidth(),
 			this.getMeasuredHeight()
 		);
 	}
 
-window.Text = Text;
-}(window));
+createjs.Text = Text;
+}());

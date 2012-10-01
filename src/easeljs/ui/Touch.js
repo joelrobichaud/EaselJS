@@ -26,8 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
+// namespace:
+this.createjs = this.createjs||{};
 
-(function(window) {
+(function() {
 
 // TODO: support for double tap.
 /**
@@ -192,5 +194,5 @@ var Touch = function() {
 		delete(ids[id]);
 	}
 
-window.Touch = Touch;
-}(window));
+createjs.Touch = Touch;
+}());

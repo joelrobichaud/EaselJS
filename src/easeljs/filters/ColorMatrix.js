@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 	
 	/**
 	 * Provides helper functions for assembling a matrix for use with the ColorMatrixFilter.
@@ -238,7 +241,7 @@
 	 * @return {ColorMatrix} A clone of this ColorMatrix.
 	 **/
 	p.clone = function() {
-		return new ColorMatrix(this);
+		return new createjs.ColorMatrix(this);
 	};
 	
 	/**
@@ -308,6 +311,5 @@
 		return matrix;
 	};
 	
-	window.ColorMatrix = ColorMatrix;
-	
-}(window));
+createjs.ColorMatrix = ColorMatrix;
+}());

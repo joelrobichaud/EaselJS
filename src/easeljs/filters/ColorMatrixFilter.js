@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
  * Applies color transforms.
@@ -38,7 +41,7 @@
 var ColorMatrixFilter = function(matrix) {
   this.initialize(matrix);
 }
-var p = ColorMatrixFilter.prototype = new Filter();
+var p = ColorMatrixFilter.prototype = new createjs.Filter();
 
 // public properties:
 	p.matrix = null;
@@ -117,8 +120,8 @@ var p = ColorMatrixFilter.prototype = new Filter();
 	 * @return {ColorMatrixFilter} A clone of the current ColorMatrixFilter instance.
 	 **/
 	p.clone = function() {
-		return new ColorMatrixFilter(this.matrix);
+		return new createjs.ColorMatrixFilter(this.matrix);
 	}
 	
-window.ColorMatrixFilter = ColorMatrixFilter;
-}(window));
+createjs.ColorMatrixFilter = ColorMatrixFilter;
+}());

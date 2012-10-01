@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
  * Represents a rectangle as defined by the points (x, y) and (x+width, y+height).
@@ -91,7 +94,7 @@ var p = Rectangle.prototype;
 	 * @return {Rectangle} a clone of the Rectangle instance.
 	 **/
 	p.clone = function() {
-		return new Rectangle(this.x, this.y, this.width, this.height);
+		return new createjs.Rectangle(this.x, this.y, this.width, this.height);
 	}
 
 	/**
@@ -103,5 +106,5 @@ var p = Rectangle.prototype;
 		return "[Rectangle (x="+this.x+" y="+this.y+" width="+this.width+" height="+this.height+")]";
 	}
 	
-window.Rectangle = Rectangle;
-}(window));
+createjs.Rectangle = Rectangle;
+}());

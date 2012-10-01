@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
  * Represents an affine transformation matrix, and provides tools for constructing and concatenating matrixes.
@@ -226,7 +229,7 @@ var p = Matrix2D.prototype;
 
 	/**
 	 * Generates matrix properties from the specified display object transform properties, and prepends them with this matrix.
-	 * For example, you can use this to generate a matrix from a display object: var mtx = new Matrix2D();
+	 * For example, you can use this to generate a matrix from a display object: var mtx = new createjs.Matrix2D();
 	 * mtx.prependTransform(o.x, o.y, o.scaleX, o.scaleY, o.rotation);
 	 * @method prependTransform
 	 * @param {Number} x
@@ -268,7 +271,7 @@ var p = Matrix2D.prototype;
 
 	/**
 	 * Generates matrix properties from the specified display object transform properties, and appends them with this matrix.
-	 * For example, you can use this to generate a matrix from a display object: var mtx = new Matrix2D();
+	 * For example, you can use this to generate a matrix from a display object: var mtx = new createjs.Matrix2D();
 	 * mtx.appendTransform(o.x, o.y, o.scaleX, o.scaleY, o.rotation);
 	 * @method appendTransform
 	 * @param {Number} x
@@ -509,7 +512,7 @@ var p = Matrix2D.prototype;
 	 * @return {Matrix2D} a clone of the Matrix2D instance.
 	 **/
 	p.clone = function() {
-		var mtx = new Matrix2D(this.a, this.b, this.c, this.d, this.tx, this.ty);
+		var mtx = new createjs.Matrix2D(this.a, this.b, this.c, this.d, this.tx, this.ty);
 		mtx.shadow = this.shadow;
 		mtx.alpha = this.alpha;
 		mtx.compositeOperation = this.compositeOperation;
@@ -528,5 +531,5 @@ var p = Matrix2D.prototype;
 	// this has to be populated after the class is defined:
 	Matrix2D.identity = new Matrix2D(1, 0, 0, 1, 0, 0);
 
-window.Matrix2D = Matrix2D;
-}(window));
+createjs.Matrix2D = Matrix2D;
+}());

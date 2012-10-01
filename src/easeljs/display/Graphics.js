@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 // used to create the instruction lists used in Graphics:
 /**
@@ -348,7 +351,7 @@ var p = Graphics.prototype;
 			var cx = this._drawingPosition.x, cy = this._drawingPosition.y, minX = Math.min(cx, x), minY = Math.min(cy, y),
 				maxX = Math.max(cx, x), maxY = Math.max(cy, y);
 
-			this._drawnShapes.push(new Rectangle(minX, minY, maxX - minX, maxY - minY));
+			this._drawnShapes.push(new createjs.Rectangle(minX, minY, maxX - minX, maxY - minY));
 		}
 		this._setDrawingPosition(x, y);
 
@@ -392,8 +395,8 @@ var p = Graphics.prototype;
 	p.arc = function(x, y, radius, startAngle, endAngle, anticlockwise) {
 		if (anticlockwise == null) { anticlockwise = false; }
 
-		var p1 = new Point(x + radius * Math.cos(startAngle), y + radius * Math.sin(startAngle)),
-			p2 = new Point(x + radius * Math.cos(endAngle), y + radius * Math.sin(endAngle));
+		var p1 = new createjs.Point(x + radius * Math.cos(startAngle), y + radius * Math.sin(startAngle)),
+			p2 = new createjs.Point(x + radius * Math.cos(endAngle), y + radius * Math.sin(endAngle));
 		if (anticlockwise) { var temp = p2; p2 = p1; p1 = temp; }	
 
 		var minX = Math.min(p1.x, p2.x), minY = Math.min(p1.y, p2.y), maxX = Math.max(p1.x, p2.x), maxY = Math.max(p1.y, p2.y),
@@ -404,7 +407,7 @@ var p = Graphics.prototype;
 		else if (rw == 0) { w = radius; }
 		else if (rh == 0) { h = radius; }
 
-		this._drawnShapes.push(new Rectangle(minX, minY, w, h));
+		this._drawnShapes.push(new createjs.Rectangle(minX, minY, w, h));
 		this._setDrawingPosition(p2.x, p2.y);
 		
 		this._dirty = this._active = true;
@@ -425,7 +428,7 @@ var p = Graphics.prototype;
 	 **/
 	p.quadraticCurveTo = function(cpx, cpy, x, y) {
 		if (this._drawingPosition != null) {
-			var cx = this._drawingPosition.x, cy = this._drawingPosition.y, ext = [new Point(cx, cy), new Point(x, y)],
+			var cx = this._drawingPosition.x, cy = this._drawingPosition.y, ext = [new createjs.Point(cx, cy), new createjs.Point(x, y)],
 				f = this._computeBezierCubicBaseValue, d = this._computeBezierQuadraticDerivative;
 
 			// Finding the derivative's maximum/minimum for each axis
@@ -434,7 +437,7 @@ var p = Graphics.prototype;
 			// Finding the point on the original function; Bezier curves only use [0, 1]
 			for (var i = 0; i < t.length; i++) {
 				if (isFinite(t[i]) && t[i] >= 0 && t[i] <= 1) {
-					ext.push(new Point(f(t[i], cx, cpx, x), f(t[i], cy, cpy, y)));
+					ext.push(new createjs.Point(f(t[i], cx, cpx, x), f(t[i], cy, cpy, y)));
 				}
 			}
 
@@ -446,7 +449,7 @@ var p = Graphics.prototype;
 				if (ext[i].x < minX) { minX = ext[i].x; }
 				if (ext[i].y < minY) { minY = ext[i].y; }
 			}
-			this._drawnShapes.push(new Rectangle(minX, minY, maxX - minX, maxY - minY));
+			this._drawnShapes.push(new createjs.Rectangle(minX, minY, maxX - minX, maxY - minY));
 		}
 		this._setDrawingPosition(x, y);
 
@@ -471,7 +474,7 @@ var p = Graphics.prototype;
 	 **/
 	p.bezierCurveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) {
 		if (this._drawingPosition != null) {
-			var cx = this._drawingPosition.x, cy = this._drawingPosition.y, ext = [new Point(cx, cy), new Point(x, y)],
+			var cx = this._drawingPosition.x, cy = this._drawingPosition.y, ext = [new createjs.Point(cx, cy), new createjs.Point(x, y)],
 				f = this._computeBezierCubicBaseValue, d = this._computeBezierCubicDerivative;
 			
 			// Finding the derivative's maximum/minimum for each axis
@@ -480,7 +483,7 @@ var p = Graphics.prototype;
 			// Finding the point on the original function; Bezier curves only use [0, 1]
 			for (var i = 0; i < t.length; i++) {
 				if (isFinite(t[i]) && t[i] >= 0 && t[i] <= 1) {
-					ext.push(new Point(f(t[i], cx, cp1x, cp2x, x), f(t[i], cy, cp1y, cp2y, y)));
+					ext.push(new createjs.Point(f(t[i], cx, cp1x, cp2x, x), f(t[i], cy, cp1y, cp2y, y)));
 				}
 			}
 
@@ -492,7 +495,7 @@ var p = Graphics.prototype;
 				if (ext[i].x < minX) { minX = ext[i].x; }
 				if (ext[i].y < minY) { minY = ext[i].y; }
 			}
-			this._drawnShapes.push(new Rectangle(minX, minY, maxX - minX, maxY - minY));
+			this._drawnShapes.push(new createjs.Rectangle(minX, minY, maxX - minX, maxY - minY));
 		}
 		this._setDrawingPosition(x, y);
 
@@ -514,7 +517,7 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.rect = function(x, y, w, h) {
-		this._drawnShapes.push(new Rectangle(x, y, w, h));
+		this._drawnShapes.push(new createjs.Rectangle(x, y, w, h));
 		this._setDrawingPosition(x, y);
 
 		this._dirty = this._active = true;
@@ -789,7 +792,7 @@ var p = Graphics.prototype;
 	 * @return {Graphics} The Graphics instance the method is called on (useful for chaining calls.)
 	 **/
 	p.drawRoundRectComplex = function(x, y, w, h, radiusTL, radiusTR, radiusBR, radiusBL) {
-		this._drawnShapes.push(new Rectangle(x, y, w, h));
+		this._drawnShapes.push(new createjs.Rectangle(x, y, w, h));
 		this._setDrawingPosition(x + radiusTL, y);
 
 		var max = (w<h?w:h)/2;
@@ -822,13 +825,13 @@ var p = Graphics.prototype;
 	/**
 	 * Draws a circle with the specified radius at (x, y).
 	 *
-	 * <pre><code>var g = new Graphics();
+	 * <pre><code>var g = new createjs.Graphics();
 	 *	g.setStrokeStyle(1);
 	 *	g.beginStroke(Graphics.getRGB(0,0,0));
 	 *	g.beginFill(Graphics.getRGB(255,0,0));
 	 *	g.drawCircle(0,0,3);
 	 *
-	 *	var s = new Shape(g);
+	 *	var s = new createjs.Shape(g);
 	 *		s.x = 100;
 	 *		s.y = 100;
 	 *
@@ -899,7 +902,7 @@ var p = Graphics.prototype;
 		if (angle == null) { angle = 0; }
 		else { angle /= 180/Math.PI; }
 
-		this._drawnShapes.push(new Rectangle(x - radius, y - radius, radius * 2, radius * 2));
+		this._drawnShapes.push(new createjs.Rectangle(x - radius, y - radius, radius * 2, radius * 2));
 		this._setDrawingPosition(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
 		
 		var a = Math.PI/sides;
@@ -986,9 +989,9 @@ var p = Graphics.prototype;
 	 */
 	p.getBounds = function() {
 		var l = this._drawnShapes.length;
-		if (l === 0) { return new Rectangle(); }
+		if (l === 0) { return new createjs.Rectangle(); }
 
-		var graphics = this._drawnShapes, bounds = new Rectangle();
+		var graphics = this._drawnShapes, bounds = new createjs.Rectangle();
 		for (var i = 0; i < l; i++) {
 			var isLeft = graphics[i].x < bounds.x;
 			var isWider = graphics[i].x + graphics[i].width > bounds.x + bounds.width;
@@ -1028,7 +1031,7 @@ var p = Graphics.prototype;
 	 * @return {Graphics} A clone of the current Graphics instance.
 	 **/
 	p.clone = function() {
-		var o = new Graphics();
+		var o = new createjs.Graphics();
 		o._instructions = this._instructions.slice();
 		o._activeInstructions = this._activeInstructions.slice();
 		o._oldInstructions = this._oldInstructions.slice();
@@ -1283,8 +1286,8 @@ var p = Graphics.prototype;
 	 * @param {Number} y
 	 **/
 	p._setDrawingPosition = function(x, y) {
-		if (this._initialDrawingPosition == null) { this._initialDrawingPosition = new Point(x, y); }
-		this._drawingPosition = new Point(x, y);
+		if (this._initialDrawingPosition == null) { this._initialDrawingPosition = new createjs.Point(x, y); }
+		this._drawingPosition = new createjs.Point(x, y);
 	}
 
 	/**
@@ -1354,5 +1357,5 @@ var p = Graphics.prototype;
 		this[name] = value;
 	}
 
-window.Graphics = Graphics;
-}(window));
+createjs.Graphics = Graphics;
+}());

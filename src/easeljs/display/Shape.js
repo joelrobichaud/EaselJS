@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
 * A Shape allows you to display vector art in the display list. It composites a Graphics instance which exposes all of the vector
@@ -39,7 +42,7 @@
 var Shape = function(graphics) {
   this.initialize(graphics);
 }
-var p = Shape.prototype = new DisplayObject();
+var p = Shape.prototype = new createjs.DisplayObject();
 
 // public properties:
 	/**
@@ -65,7 +68,7 @@ var p = Shape.prototype = new DisplayObject();
 	 **/
 	p.initialize = function(graphics) {
 		this.DisplayObject_initialize();
-		this.graphics = graphics ? graphics : new Graphics();
+		this.graphics = graphics ? graphics : new createjs.Graphics();
 	}
 
 // public methods :
@@ -111,7 +114,7 @@ var p = Shape.prototype = new DisplayObject();
 	 * will be shared with the new Shape.
 	 **/
 	p.clone = function(recursive) {
-		var o = new Shape((recursive && this.graphics) ? this.graphics.clone() : this.graphics);
+		var o = new createjs.Shape((recursive && this.graphics) ? this.graphics.clone() : this.graphics);
 		this.cloneProps(o);
 		return o;
 	}
@@ -133,8 +136,8 @@ var p = Shape.prototype = new DisplayObject();
 	 **/
 	p._measureDimensions = function() {
 		var bounds = this.graphics.getBounds();
-		return new Point(bounds.width, bounds.height);
+		return new createjs.Point(bounds.width, bounds.height);
 	}
 
-window.Shape = Shape;
-}(window));
+createjs.Shape = Shape;
+}());

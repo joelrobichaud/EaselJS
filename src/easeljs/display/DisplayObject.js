@@ -33,7 +33,10 @@
 * @module EaselJS
 **/
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
 * DisplayObject is an abstract class that should not be constructed directly. Instead construct subclasses such as
@@ -45,7 +48,7 @@
 var DisplayObject = function() {
  	this.initialize();
 }
-var p = DisplayObject.prototype = new EventDispatcher();
+var p = DisplayObject.prototype = new createjs.EventDispatcher();
 
 // public static properties:
 	/**
@@ -382,8 +385,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 **/
 	p.initialize = function() {
 		this.EventDispatcher_initialize();
-		this.id = UID.get();
-		this._matrix = new Matrix2D();
+		this.id = createjs.UID.get();
+		this._matrix = new createjs.Matrix2D();
 	}
 
 // public methods:
@@ -538,7 +541,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Point}
 	 */
 	p.getCenterPoint = function() {
-		return new Point(this.x + this.getWidth() * 0.5, this.y + this.getHeight() * 0.5);
+		return new createjs.Point(this.x + this.getWidth() * 0.5, this.y + this.getHeight() * 0.5);
 	}
 
 	/**
@@ -556,7 +559,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 		var mtx = this.getConcatenatedMatrix(this._matrix);
 		if (mtx == null) { return null; }
 		mtx.append(1, 0, 0, 1, x, y);
-		return new Point(mtx.tx, mtx.ty);
+		return new createjs.Point(mtx.tx, mtx.ty);
 	}
 
 	/**
@@ -575,7 +578,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 		if (mtx == null) { return null; }
 		mtx.invert();
 		mtx.append(1, 0, 0, 1, x, y);
-		return new Point(mtx.tx, mtx.ty);
+		return new createjs.Point(mtx.tx, mtx.ty);
 	}
 
 	/**
@@ -632,7 +635,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 **/
 	p.getMatrix = function(matrix) {
 		var o = this;
-		return (matrix ? matrix.identity() : new Matrix()).appendTransform(o.x, o.y, o.scaleX, o.scaleY, o.rotation, o.skewX, o.skewY, o.regX, o.regY).appendProperties(o.alpha, o.shadow, o.compositeOperation);
+		return (matrix ? matrix.identity() : new createjs.Matrix2D()).appendTransform(o.x, o.y, o.scaleX, o.scaleY, o.rotation, o.skewX, o.skewY, o.regX, o.regY).appendProperties(o.alpha, o.shadow, o.compositeOperation);
 	}
 	
 	/**
@@ -648,7 +651,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 **/
 	p.getConcatenatedMatrix = function(matrix) {
 		if (matrix) { matrix.identity(); }
-		else { matrix = new Matrix2D(); }
+		else { matrix = new createjs.Matrix2D(); }
 		var o = this;
 		while (o != null) {
 			matrix.prependTransform(o.x, o.y, o.scaleX, o.scaleY, o.rotation, o.skewX, o.skewY, o.regX, o.regY).prependProperties(o.alpha, o.shadow, o.compositeOperation);
@@ -664,7 +667,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	p.getWidth = function() {
 		var b = this.nominalBounds;
 		if (b) { return b.width + b.x; }
-		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
+		var mtx = new createjs.Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return Math.abs(dimensions.x * mtx.a + dimensions.y * mtx.b);
 	}
@@ -676,7 +679,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	p.getHeight = function() {
 		var b = this.nominalBounds;
 		if (b) { return b.height + b.y; }
-		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
+		var mtx = new createjs.Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return Math.abs(dimensions.x * mtx.c + dimensions.y * mtx.d);
 	}
@@ -688,7 +691,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	p.getSize = function() {
 		var b = this.nominalBounds;
 		if (b) { return { width: b.width + b.x, height: b.height + b.y }; }
-		var mtx = new Matrix2D(), dimensions = this._measureDimensions();
+		var mtx = new createjs.Matrix2D(), dimensions = this._measureDimensions();
 		mtx.appendTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation, this.skewX, this.skewY);
 		return {
 			width: Math.abs(dimensions.x * mtx.a + dimensions.y * mtx.b),
@@ -823,7 +826,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @param {MouseEvent} evt
 	 **/
 	p.drag = function(evt) {
-		var current, destination = new Point(), localDestination, dragInfos = this._dragInfos, bounds = dragInfos.bounds;
+		var current, destination = new createjs.Point(), localDestination, dragInfos = this._dragInfos, bounds = dragInfos.bounds;
 
 		if (dragInfos.lockCenter) {
 			destination.x = evt.stageX - dragInfos.offsetX
@@ -834,7 +837,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 		}
 		
 		if (bounds) {
-			current = new Point(destination.x, destination.y);
+			current = new createjs.Point(destination.x, destination.y);
 
 			if (bounds.width < this.getWidth() || bounds.height < this.getHeight())
 			{
@@ -878,7 +881,7 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 @return {DisplayObject} A clone of the current DisplayObject instance.
 	 **/
 	p.clone = function() {
-		var o = new DisplayObject();
+		var o = new createjs.DisplayObject();
 		this.cloneProps(o);
 		return o;
 	}
@@ -983,8 +986,8 @@ var p = DisplayObject.prototype = new EventDispatcher();
 	 * @return {Point}
 	 **/
 	p._measureDimensions = function() {
-		return new Point();
+		return new createjs.Point();
 	}
 
-window.DisplayObject = DisplayObject;
-}(window));
+createjs.DisplayObject = DisplayObject;
+}());

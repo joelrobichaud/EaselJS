@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
  * Applies a greyscale alpha map image (or canvas) to the target, such that the alpha channel of the result will
@@ -42,7 +45,7 @@
 var AlphaMapFilter = function(alphaMap) {
   this.initialize(alphaMap);
 }
-var p = AlphaMapFilter.prototype = new Filter();
+var p = AlphaMapFilter.prototype = new createjs.Filter();
 
 // constructor:
 	/** @ignore */
@@ -104,7 +107,7 @@ var p = AlphaMapFilter.prototype = new Filter();
 	 * Returns a clone of this object.
 	 **/
 	p.clone = function() {
-		return new AlphaMapFilter(this.mask);
+		return new createjs.AlphaMapFilter(this.mask);
 	}
 
 	/**
@@ -142,5 +145,5 @@ var p = AlphaMapFilter.prototype = new Filter();
 		return true;
 	}
 
-window.AlphaMapFilter = AlphaMapFilter;
-}(window));
+createjs.AlphaMapFilter = AlphaMapFilter;
+}());

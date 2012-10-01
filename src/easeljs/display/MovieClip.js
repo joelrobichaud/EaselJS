@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
  * The MovieClip class associates a TweenJS Timeline with an EaselJS Container. It allows you to create objects which
@@ -46,7 +49,7 @@
 var MovieClip = function(mode, startPosition, loop, labels) {
   this.initialize(mode, startPosition, loop, labels);
 }
-var p = MovieClip.prototype = new Container();
+var p = MovieClip.prototype = new createjs.Container();
 
 // public static properties:
 	/**
@@ -178,7 +181,7 @@ var p = MovieClip.prototype = new Container();
 		this.loop = loop;
 		props = {paused:true, position:startPosition, useTicks:true};
 		this.Container_initialize();
-		this.timeline = new Timeline(null, labels, props);
+		this.timeline = new createjs.Timeline(null, labels, props);
 		this._managed = {};
 	}
 	
@@ -391,9 +394,8 @@ var p = MovieClip.prototype = new Container();
 		this._managed[child.id] = 2;
 	}
 	
-
-window.MovieClip = MovieClip;
-}(window));
+createjs.MovieClip = MovieClip;
+}());
 
 (function() {
 	/**

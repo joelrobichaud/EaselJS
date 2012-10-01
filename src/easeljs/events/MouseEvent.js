@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
 * MouseEvent is the event type that is passed down to event handlers for mouseDown, mouseMove, mouseUp, click, rollOver and rollOut event types.
@@ -43,7 +46,7 @@
 var MouseEvent = function(type, stageX, stageY, nativeEvent, pointerID, primary) {
   this.initialize(type, stageX, stageY, nativeEvent, pointerID, primary);
 }
-var p = MouseEvent.prototype = new NativeEvent();
+var p = MouseEvent.prototype = new createjs.NativeEvent();
 var s = MouseEvent;
 
 // public properties:
@@ -167,7 +170,7 @@ var s = MouseEvent;
 	 * @return {MouseEvent} a clone of the MouseEvent instance.
 	 **/
 	p.clone = function() {
-		return new MouseEvent(this.type, this.stageX, this.stageY, this.nativeEvent, this.pointerID, this.primary);
+		return new createjs.MouseEvent(this.type, this.stageX, this.stageY, this.nativeEvent, this.pointerID, this.primary);
 	}
 
 	/**
@@ -179,5 +182,5 @@ var s = MouseEvent;
 		return "[MouseEvent (type="+this.type+" stageX="+this.stageX+" stageY="+this.stageY+")]";
 	}
 
-window.MouseEvent = MouseEvent;
-}(window));
+createjs.MouseEvent = MouseEvent;
+}());

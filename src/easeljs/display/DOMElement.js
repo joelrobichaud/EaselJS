@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 // TODO: fix problems with rotation.
 // TODO: exclude from getObjectsUnderPoint
 
@@ -53,7 +56,7 @@
 var DOMElement = function(htmlElement, wrapperOnly) {
   this.initialize(htmlElement, wrapperOnly);
 }
-var p = DOMElement.prototype = new DisplayObject();
+var p = DOMElement.prototype = new createjs.DisplayObject();
 
 // public properties:
 	/**
@@ -173,7 +176,7 @@ var p = DOMElement.prototype = new DisplayObject();
 	 **/
 	p.clone = function(cloneNode) {
 		var el = cloneNode ? this.htmlElement.cloneNode(true) : this.htmlElement;
-		var o = new DOMElement(el, this.wrapperOnly);
+		var o = new createjs.DOMElement(el, this.wrapperOnly);
 		if (cloneNode) { this.htmlElement.parentNode.appendChild(el) }
 		this.cloneProps(o);
 		return o;
@@ -203,7 +206,7 @@ var p = DOMElement.prototype = new DisplayObject();
 	 **/
 	p._measureDimensions = function() {
 		var o = this.htmlElement;
-		return new Point(o.offsetWidth, o.offsetHeight);
+		return new createjs.Point(o.offsetWidth, o.offsetHeight);
 	}
 
 	/* Not needed with current setup:
@@ -216,5 +219,6 @@ var p = DOMElement.prototype = new DisplayObject();
 		return true;
 	}
 	*/
-window.DOMElement = DOMElement;
-}(window));
+
+createjs.DOMElement = DOMElement;
+}());

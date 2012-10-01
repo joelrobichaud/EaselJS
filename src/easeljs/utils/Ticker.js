@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 // constructor:
 /**
@@ -419,5 +422,5 @@ var Ticker = function() {
 		return (now&&now.call(performance))||(new Date().getTime());
 	}
 
-window.Ticker = Ticker;
-}(window));
+createjs.Ticker = Ticker;
+}());

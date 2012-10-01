@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 	
 /**
 * Displays frames or sequences of frames (ie. animations) from a sprite sheet image. A sprite sheet is a series of images
@@ -43,7 +46,7 @@
 var BitmapAnimation = function(spriteSheet) {
   this.initialize(spriteSheet);
 }
-var p = BitmapAnimation.prototype = new DisplayObject();
+var p = BitmapAnimation.prototype = new createjs.DisplayObject();
 
 // public properties:
 	/**
@@ -267,7 +270,7 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 	 * @return {Point} a clone of the Point instance.
 	 **/
 	p.clone = function() {
-		var o = new BitmapAnimation(this.spriteSheet);
+		var o = new createjs.BitmapAnimation(this.spriteSheet);
 		this.cloneProps(o);
 		return o;
 	}
@@ -373,8 +376,8 @@ var p = BitmapAnimation.prototype = new DisplayObject();
 	 * @return {Point}
 	 **/
 	p._measureDimensions = function() {
-		return new Point(this.spriteSheet._frameWidth, this.spriteSheet._frameHeight);
+		return new createjs.Point(this.spriteSheet._frameWidth, this.spriteSheet._frameHeight);
 	}
 
-window.BitmapAnimation = BitmapAnimation;
-}(window));
+createjs.BitmapAnimation = BitmapAnimation;
+}());

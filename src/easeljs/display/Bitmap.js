@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 
 /**
 * A Bitmap represents an Image, Canvas, or Video in the display list.
@@ -38,7 +41,7 @@
 var Bitmap = function(imageOrUri) {
   this.initialize(imageOrUri);
 }
-var p = Bitmap.prototype = new DisplayObject();
+var p = Bitmap.prototype = new createjs.DisplayObject();
 
 // public properties:
 	/**
@@ -154,7 +157,7 @@ var p = Bitmap.prototype = new DisplayObject();
 	 * @return {Bitmap} a clone of the Bitmap instance.
 	 **/
 	p.clone = function() {
-		var o = new Bitmap(this.image);
+		var o = new createjs.Bitmap(this.image);
 		this.cloneProps(o);
 		return o;
 	}
@@ -176,16 +179,16 @@ var p = Bitmap.prototype = new DisplayObject();
 	 **/
 	p._measureDimensions = function() {
 		var dimensions, image = this.image, sourceRect = this.sourceRect;
-		if (!image) return new Point();
-		if (sourceRect) { return new Point(sourceRect.width, sourceRect.height); }
+		if (!image) return new createjs.Point();
+		if (sourceRect) { return new createjs.Point(sourceRect.width, sourceRect.height); }
 
 		if (image instanceof HTMLImageElement) {
-			dimensions = new Point(image.naturalWidth, image.naturalHeight);
+			dimensions = new createjs.Point(image.naturalWidth, image.naturalHeight);
 		} else if (image instanceof HTMLVideoElement) {
-			dimensions = new Point(image.videoWidth, image.videoHeight);
+			dimensions = new createjs.Point(image.videoWidth, image.videoHeight);
 		}
-		return dimensions || new Point(image.width, image.height);
+		return dimensions || new createjs.Point(image.width, image.height);
 	}
 
-window.Bitmap = Bitmap;
-}(window));
+createjs.Bitmap = Bitmap;
+}());

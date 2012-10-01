@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+// namespace:
+this.createjs = this.createjs||{};
+
+(function() {
 // constructor:
 /**
  * The SpriteSheetUtils class is a collection of static methods for working
@@ -201,5 +204,5 @@ var SpriteSheetUtils = function() {
 		}
 	}
 
-window.SpriteSheetUtils = SpriteSheetUtils;
-}(window));
+createjs.SpriteSheetUtils = SpriteSheetUtils;
+}());
